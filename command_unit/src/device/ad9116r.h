@@ -117,7 +117,6 @@ extern "C" {
     #define     AD9116_CLKMODE_EN                   (1 << 2)
     #define     AD9116_CLKMODE_REACQUIRE            (1 << 3)
     #define     AD9116_CLKMODE_SEARCHING            (1 << 4)
-    #define     AD9116_CLKMODE_I(a)                 (((a) & 0x03) << 6)
 
 #define     AD9116_VERSION       (0x1Fu)
 

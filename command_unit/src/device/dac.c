@@ -30,13 +30,25 @@ int     dac_open
      )
 {
 	/* конфигурируем интерфейсы ЦАПов */
-	ad9116_open(0);
-	ad9116_open(1);
-	ad9116_open(2);
-	ad9116_open(3);
+	if (dac_index & DAC_01)
+	{
+		ad9116_open(0);		
+	}
+	if (dac_index & DAC_23)
+	{
+		ad9116_open(1);		
+	}
+	if (dac_index & DAC_45)
+	{
+		ad9116_open(2);		
+	}
+	if (dac_index & DAC_67)
+	{
+		ad9116_open(3);		
+	}
 	
-	/* кофигурируем шкалу цап, настраиваем */
-    
+	/* конфигурируем шкалу цап, настраиваем */
+	
     
 	return OK;
 }

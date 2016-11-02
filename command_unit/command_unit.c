@@ -1,5 +1,6 @@
 #include "fsm_protocol_cdc.h"
 #include "cmd_proc.h"
+#include "device/dac.h"
 
 #ifdef __cplusplus
 extern "C"

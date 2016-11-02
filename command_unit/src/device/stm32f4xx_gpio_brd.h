@@ -24,6 +24,36 @@ extern "C" {
 #define   ERR     (-1)
 #endif
 
+	
+#define DAC_CLK_Pin GPIO_PIN_0
+#define DAC_CLK_GPIO_Port GPIOB
+#define DAC_RES_Pin GPIO_PIN_1
+#define DAC_RES_GPIO_Port GPIOB
+#define DAC_CLK_IO_0_Pin GPIO_PIN_12
+#define DAC_CLK_IO_0_GPIO_Port GPIOE
+#define DAC_CLK_IO_1_Pin GPIO_PIN_13
+#define DAC_CLK_IO_1_GPIO_Port GPIOE
+#define DAC_CLK_IO_2_Pin GPIO_PIN_14
+#define DAC_CLK_IO_2_GPIO_Port GPIOE
+#define DAC_CLK_IO_3_Pin GPIO_PIN_15
+#define DAC_CLK_IO_3_GPIO_Port GPIOE
+
+	
+#define DAC_SCK_Pin GPIO_PIN_13
+#define DAC_MISO_Pin GPIO_PIN_14
+#define DAC_MOSI_Pin GPIO_PIN_15
+#define DAC_SPI_GPIO_Port GPIOB
+	
+#define DAC_SPI_SS0_Pin GPIO_PIN_12
+#define DAC_SPI_SS0_GPIO_Port GPIOB
+#define DAC_SPI_SS3_Pin GPIO_PIN_3
+#define DAC_SPI_SS3_GPIO_Port GPIOB
+#define DAC_SPI_SS2_Pin GPIO_PIN_4
+#define DAC_SPI_SS2_GPIO_Port GPIOB
+#define DAC_SPI_SS1_Pin GPIO_PIN_5
+#define DAC_SPI_SS1_GPIO_Port GPIOB
+
+	
 /*types=============================================================================================================*/
     
 /*prototypes========================================================================================================*/
@@ -31,13 +61,15 @@ extern "C" {
 	int gpio_cpld_open( void );    
     int gpio_cpld_close( void );
     
-    int gpio_dac_open( void );
-    int gpio_dac_close( void );
+	int gpio_dac_open(int);
+	int gpio_dac_close(int);
 
-    int gpio_dacspi_open( void );
-    int gpio_dacspi_close( void );
+    int gpio_dacspi_open(int);
+	int gpio_dacspi_close(int);
     
-    
+	int gpio_dacpwm_open(void);
+	int gpio_dacpwm_close(void);
+
 #ifdef	__cplusplus
 	}
 #endif
