@@ -64,11 +64,22 @@ extern "C" {
 	int gpio_dac_open(int);
 	int gpio_dac_close(int);
 
-    int gpio_dacspi_open(int);
-	int gpio_dacspi_close(int);
+    int  gpio_dacspi_open(int);
+	int  gpio_dacspi_close(int);
+	void gpio_dacspi_cs_down(int);
+	void gpio_dacspi_cs_up(int);
+	void gpio_dacspi_reset_up(void);
+	void gpio_dacspi_reset_down(void);
+	
+	int  gpio_dac_write_01(uint16_t	data_1, uint16_t data_2);
+	int  gpio_dac_write_23(uint16_t	data_1, uint16_t data_2);
+	int  gpio_dac_write_45(uint16_t	data_1, uint16_t data_2);
+	int  gpio_dac_write_67(uint16_t	data_1, uint16_t data_2);
+	int  gpio_dac_write_all(uint16_t *data, uint16_t len);
     
 	int gpio_dacpwm_open(void);
 	int gpio_dacpwm_close(void);
+
 
 #ifdef	__cplusplus
 	}

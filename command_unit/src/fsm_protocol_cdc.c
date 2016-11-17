@@ -57,7 +57,6 @@ static void cdc_reset( int state, int signal );
 static void cdc_send_data( int state, int signal );
 static void cdc_send_code( int state, int signal );
 
-
 /*variables=========================================================================================================*/
 const  fsm_table_t   cdc_recv_table[3][6] = {
     [CDCRECV_STATE_READY][CDC_READY]            = { CDCRECV_STATE_READY,        NULL },
@@ -110,12 +109,14 @@ static uint32_t             parse_index = 0;
 static char*				brk_sym = NULL; 
 
 static uint8_t			    output_cdcbuffer[CDC_OUTPUT_BUFSIZE];
-static uint8_t              echo_need = 1;
+static uint8_t              echo_need = 0;
 
 static uint8_t				code_in;
 static uint8_t              *answ_data;
 static err_code_t           answ_code;
 static int                  input_agr_num;
+
+static cmd_code_t			answmsg_code;
 
 
 /*code==============================================================================================================*/
@@ -242,12 +243,14 @@ static void cdc_code_parse( int state, int signal )
     code = get_code_from_string( (char*)input_cdcbuffer );
     move_col = ((int)brk_sym - (int)input_cdcbuffer + 1);
     input_index -= move_col;
-    memmove( input_cdcbuffer, brk_sym + 1, move_col );
+//    memmove( input_cdcbuffer, brk_sym + 1, move_col );
+	memmove(input_cdcbuffer, brk_sym + 1, input_index);    
     memset( &input_cdcbuffer[input_index], 0, move_col );
     	
     code_in = code;
     input_agr_num = get_argnumfromcode( code );
     parse_index = 0;
+	    	    
     if ( code == 0 )
         {
         send_message( code_in, _RESULT_NOOP, CDCSEND_FSM, CDCRECV_FSM, cmd_data_out ); 
@@ -281,6 +284,14 @@ static void cdc_data_save( int state, int signal )
         *string++ = lower_ch;
         }
 
+//	    {
+//		    uint8_t		buf[64];
+//		    uint8_t		len;
+//		            
+//		    len = sprintf(buf, "\n\r%u %u\n\r", code, input_agr_num);
+//		    VCP_write(buf, len);
+//	    }
+//
     if ( trans_data_from_string( code_in, (char*)input_cdcbuffer, &end_of_ch, cmd_data_in, &datalen ) != OK ) {
         send_message( code_in, _RESULT_BADFORMAT, CDCSEND_FSM, CDCRECV_FSM, cmd_data_out ); 
         cdc_curnt_signal = CDC_READY;
@@ -354,7 +365,6 @@ enum CDCSEND_STATE*	get_curst_sendcdc (void)
 
 
 
-static cmd_code_t   answmsg_code;
 
 
 /*=============================================================================================================*/
@@ -456,47 +466,44 @@ static void cdc_send_data( int state, int signal )
    
                 /* ÷¿œ0 */
                 memcpy( &code, &((uint8_t*)answ_data)[2], 2 );
-                len += sprintf( &buf[len], " 00F", 4 );
+	            len += sprintf(&buf[len], " %03X", code);
     
                 /* ÷¿œ1 */
                 memcpy( &code, &((uint8_t*)answ_data)[4], 2 );
-                len += sprintf( &buf[len], " 010", 4 );
+                len += sprintf( &buf[len], " %03X", code );
     
                 /* ÷¿œ2 */
                 memcpy( &code, &((uint8_t*)answ_data)[6], 2 );
-                len += sprintf( &buf[len], " 011", 4 );
+                len += sprintf( &buf[len], " %03X", code );
 
                     /* ÷¿œ3 */
                 memcpy( &code, &((uint8_t*)answ_data)[8], 2 );
-                len += sprintf( &buf[len], " 012", 4 );
+	                len += sprintf(&buf[len], " %03X", code);
 
                     /* ÷¿œ4 */
                 memcpy( &code, &((uint8_t*)answ_data)[10], 2 );
-                len += sprintf( &buf[len], " 013", 4 );
+	                len += sprintf(&buf[len], " %03X", code);
     
                 /* ÷¿œ5 */
                 memcpy( &code, &((uint8_t*)answ_data)[12], 2 );
-                len += sprintf( &buf[len], " 014", 4 );
+	                len += sprintf(&buf[len], " %03X", code);
     
                 /* ÷¿œ6 */
                 memcpy( &code, &((uint8_t*)answ_data)[14], 2 );
-                len += sprintf( &buf[len], " 015", 4 );
+	                len += sprintf(&buf[len], " %03X", code);
     
                 /* ÷¿œ7 */
                 memcpy( &code, &((uint8_t*)answ_data)[16], 2 );
-                len += sprintf( &buf[len], " 016", 4 );
+	                len += sprintf(&buf[len], " %03X", code);
 
-                /* ÷¿œ8 */
-                memcpy( &code, &((uint8_t*)answ_data)[18], 2 );
-                len += sprintf( &buf[len], " 018", 4 );
-    
                 /* ¿÷œ0 */
+                memcpy( &code, &((uint8_t*)answ_data)[18], 2 );
+	                len += sprintf(&buf[len], " %03X", code);
+    
+                /* ¿÷œ1 */
                 memcpy( &code, &((uint8_t*)answ_data)[20], 2 );
-                len += sprintf( &buf[len], " 020", 4 );
+	                len += sprintf(&buf[len], " %03X", code);
 
-                    /* ¿÷œ1 */
-                memcpy( &code, &((uint8_t*)answ_data)[20], 2 );
-                len += sprintf( &buf[len], " 022", 4 );
                 
                 }
                 break;
@@ -630,10 +637,24 @@ static void cdc_send_data( int state, int signal )
                     }
                 
                     gain = (uint16_t)answ_data[1] * 5;
-                    len += sprintf( &buf[len], " %04d", gain );
+                    len += sprintf( &buf[len], " %d", gain );
                     
                     memcpy( &freq, &answ_data[2], 4 );
                     len += sprintf( &buf[len], " %d", freq );
+
+	                switch (het_flags.bitflags.mulstate) {
+	                case HETMUL_OFF:        len += sprintf(&buf[len], " off");    break;
+	                case HETMUL_X2LOW:      len += sprintf(&buf[len], " x2low");  break;
+	                case HETMUL_X2HIGH:     len += sprintf(&buf[len], " x2high"); break;
+	                case HETMUL_X4HIGH:     len += sprintf(&buf[len], " x4high"); break;
+	                }
+	                
+	                gain = (uint16_t)answ_data[7] * 5;
+	                len += sprintf(&buf[len], " %d", gain);
+	                
+	                memcpy(&freq, &answ_data[8], 4);
+	                len += sprintf(&buf[len], " %d", freq);
+	                
                 }
                 break;
                 

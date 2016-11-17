@@ -310,6 +310,12 @@
     <ClCompile Include="src\device\stm32f4xx_gpio_brd.c">
       <Filter>Source files\board specific files</Filter>
     </ClCompile>
+    <ClCompile Include="src\device\stm32f4xx_spidac_brd.c">
+      <Filter>Source files\board specific files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\device\stm32f4xx_pwmdac_brd.c">
+      <Filter>Source files\board specific files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="usbd_cdc_if.h">
@@ -643,6 +649,12 @@
       <Filter>Header files\board specific files</Filter>
     </ClInclude>
     <ClInclude Include="src\device\stm32f4xx_gpio_brd.h">
+      <Filter>Header files\board specific files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\device\stm32f4xx_spidac_brd.h">
+      <Filter>Header files\board specific files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\device\stm32f4xx_pwmdac_brd.h">
       <Filter>Header files\board specific files</Filter>
     </ClInclude>
   </ItemGroup>

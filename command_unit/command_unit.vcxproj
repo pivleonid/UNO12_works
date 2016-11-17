@@ -139,6 +139,8 @@
     <ClCompile Include="src\device\dac.c" />
     <ClCompile Include="src\device\freqcmd_quick.c" />
     <ClCompile Include="src\device\stm32f4xx_gpio_brd.c" />
+    <ClCompile Include="src\device\stm32f4xx_pwmdac_brd.c" />
+    <ClCompile Include="src\device\stm32f4xx_spidac_brd.c" />
     <ClCompile Include="src\fsm_protocol_cdc.c" />
     <ClCompile Include="src\hrdwr_func.c" />
     <ClCompile Include="src\inttask_messages.c" />
@@ -249,6 +251,8 @@
     <ClInclude Include="src\device\dac.h" />
     <ClInclude Include="src\device\freqcmd_quick.h" />
     <ClInclude Include="src\device\stm32f4xx_gpio_brd.h" />
+    <ClInclude Include="src\device\stm32f4xx_pwmdac_brd.h" />
+    <ClInclude Include="src\device\stm32f4xx_spidac_brd.h" />
     <ClInclude Include="src\mdlwr\common_lib\atomiccode.h" />
     <ClInclude Include="src\mdlwr\common_lib\circ_buffer.h" />
     <ClInclude Include="src\mdlwr\fsm\fsm.h" />

@@ -9,7 +9,9 @@
 /*includes==========================================================================================================*/
 #include "ad9116.h"
 #include "stm32f4xx_gpio_brd.h"
-#include <stm32f4xx_hal.h>
+#include "stm32f4xx_spidac_brd.h"
+#include "stm32f4xx_pwmdac_brd.h"
+//#include <stm32f4xx_hal.h>
 
 /*defines===========================================================================================================*/
 
@@ -18,15 +20,15 @@
 
 
 /*prototypes========================================================================================================*/
-static void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+//static void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 
 /*variables=========================================================================================================*/
-static	uint8_t				clock_timer_disabled;		/* флаг указывающий работает или нет тактирующий таймер 1-выключен, 0-включен*/
-static	TIM_HandleTypeDef	htim3;
-static	SPI_HandleTypeDef	hspi2;
+static	uint8_t				clock_timer_disabled = 1;		/* флаг указывающий работает или нет тактирующий таймер 1-выключен, 0-включен*/
 
 /*code==============================================================================================================*/
+
+uint8_t		verbuf = 0;
 
 /*=============================================================================================================*/
 /*!  \brief конфигурируем интерфейсы последовательный и параралельный для управлениея ЦАПом
@@ -40,81 +42,30 @@ int     ad9116_open
     (
      int dac_index      /*!< [in] индекс цапа 0-3 */
      )
-    {
-    
+    {    
         /* конфигурирование ног паралелльной шины как выходов */
 	    gpio_dac_open(dac_index);
     
         /* включение интерфейса SPI2 */
-	    hspi2.Instance = SPI2;
-	    hspi2.Init.Mode = SPI_MODE_MASTER;
-	    hspi2.Init.Direction = SPI_DIRECTION_1LINE;
-	    hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
-	    hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-	    hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-	    hspi2.Init.NSS = SPI_NSS_SOFT;
-	    hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-	    hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	    hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
-	    hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-	    hspi2.Init.CRCPolynomial = 10;
-	    if (HAL_SPI_Init(&hspi2) != HAL_OK)
-	    {
-		    return ERR;
-	    }
-
+	    spi_dac_open(dac_index);    
 	    gpio_dacspi_open(dac_index);
         
-	   	    
         /* включение тактирующего таймера */
 	    if (clock_timer_disabled)
 	    {
 		    clock_timer_disabled = 0;
 		    /* tim3 ch3 */
-		    TIM_ClockConfigTypeDef	sClockSourceConfig;
-		    TIM_MasterConfigTypeDef sMasterConfig;
-		    TIM_OC_InitTypeDef		sConfigOC;
-
-		    htim3.Instance = TIM3;
-		    htim3.Init.Prescaler = 0;
-		    htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-		    htim3.Init.Period = 0;
-		    htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-		    if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
-		    {
-			    return ERR;
-		    }
-
-		    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-		    if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
-		    {
-			    return ERR;
-		    }
-
-		    if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
-		    {
-			    return ERR;
-		    }
-
-		    sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-		    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-		    if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
-		    {
-			    return ERR;
-		    }
-
-		    sConfigOC.OCMode = TIM_OCMODE_PWM1;
-		    sConfigOC.Pulse = 0;
-		    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-		    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-		    if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-		    {
-			    return ERR;
-		    }
-
+		    pwm_dac_open();		    
 		    gpio_dacpwm_open();		    
-	}
-    
+		}
+	    
+//	    for (;;)
+//	    {
+//		    spi_dac_read(dac_index, AD9116_VERSION, &verbuf, 1, 1000);
+//		    continue;		    
+//	    }		    
+//    
+	    	    
 	return OK;
     }
 
@@ -144,6 +95,8 @@ int     ad9116_close
 	    clock_timer_disabled = 1;
     }
 	    
+	    
+	    
     return OK;    
     }
 
@@ -157,20 +110,63 @@ int     ad9116_close
      \sa 
 */
 /*=============================================================================================================*/
-int     ad9116_write
+int     ad9116_write_data
     (
      int                    dac_index,  /*!< [in] индекс цапа 0-3                           */
-	 int					q_or_i,		/*!< [in] выбор выхода ЦАП							*/
      enum AD9116_INTERFACE  interface,  /*!< [in] интерфейс по которому передаются данные   */
-     uint8_t                *data,      /*!< [in] указатель на передаваемые в ЦАП данные    */
-     uint8_t                len         /*!< [in] длина передаваемых данных в байтах        */
-     )
+	 dac_values_t			data		/*!< [in] данные для выхода i и q ЦАПа			    */
+	)
     {
     /**/
-    
+	    switch (interface)
+	    {
+	    case AD9116_SPI:   
+		    {
+					/* для мультиплексированных выходов */
+			    spi_dac_write(dac_index, AD9116_AUXDAC_Q, (uint8_t*)&data.q, 2, 1000);
+			    spi_dac_write(dac_index, AD9116_AUXDAC_I, (uint8_t*)&data.i, 2, 1000);
+		    } break;
+		    
+	    case AD9116_PARALLEL:
+		    {
+			    if (dac_index & DAC_01) {
+				    gpio_dac_write_01(data.i , data.q);
+			    } else
+			    if (dac_index & DAC_23) {
+				    gpio_dac_write_23(data.i, data.q);
+			    } else
+			    if (dac_index & DAC_45) {
+				    gpio_dac_write_45(data.i, data.q);
+			    } else
+			    if (dac_index & DAC_67) {
+				    gpio_dac_write_67(data.i, data.q);
+			    }
+		    } break;
+	    }
+	    	    
     return OK;    
     }
     
+/*=============================================================================================================*/
+/*!  \brief запись последовательно во все ЦАП
+
+     \return int
+     \retval OK, ERROR
+     \sa 
+*/
+/*=============================================================================================================*/
+int     ad9116_write_parralel
+    (
+    int                    dac_index,  /*!< [in] индекс цапа 0-3                           */
+	uint16_t               *data,	   /*!< [in] данные для выхода i ЦАПа				    */
+	uint8_t                len		   /*!< [in] данные для выхода q ЦАПа    */
+	)
+{
+	
+	
+	return OK;
+}
+
 
 
 
@@ -182,18 +178,19 @@ int     ad9116_write
      \sa 
 */
 /*=============================================================================================================*/
-int     ad9116_read
+uint8_t     ad9116_read_id
     (
-     int                    dac_index,   /*!< [in] индекс цапа 0-3                           */
-	 int					q_or_i,		 /*!< [in] выбор выхода ЦАП							*/
-	 enum AD9116_INTERFACE  interface,   /*!< [in] интерфейс по которому передаются данные   */
-     uint8_t                *data,       /*!< [in] указатель на передаваемые в ЦАП данные    */
-     uint8_t                len          /*!< [in] длина передаваемых данных в байтах        */
+     int                    dac_index   /*!< [in] индекс цапа 0-3                           */
      )
     {
-    /**/
+	    uint8_t		id = 0;
     
-    return OK;    
+	    for (;;)
+	    {
+		    spi_dac_read(DAC_01, AD9116_VERSION, &id, 1, 1000);		    
+	    }
+	    
+		return id;    
     }
     
 
