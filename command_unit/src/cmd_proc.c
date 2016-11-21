@@ -70,7 +70,7 @@ const struct _CMD_TABLE
 /**/	    
     {   CMDCODE_ATT,            "mechatt",  1,  set_mechatt },
     {   CMDCODE_PRES,           "pres",     4,  set_pres    },
-    {   CMDCODE_GET_PRES_STS,   "presstat", 0,  get_pres    },
+    {   CMDCODE_GET_PRES_STS,	"presstat", 0,	get_pres    },
         
     {   CMDCODE_YIG,            "yig",      1,  set_yig     },
     {   CMDCODE_GET_YIG,        "getyig",   0,  get_yig     },
@@ -359,9 +359,9 @@ static err_code_t  set_mechatt( void* in_data, void* answ_data )
 /*=============================================================================================================*/
 static err_code_t  set_pres( void* in_data, void* answ_data )
     {    
-    set_mechatt_flags( ((uint8_t*)in_data)[0] );
+		set_mechatt_flags((const struct  _ATT_FLAGS *)&((uint8_t*)in_data)[0]);
     
-    return _RESULT_OK;        
+		return _RESULT_OK;        
     }
         
 /*=============================================================================================================*/
@@ -740,7 +740,8 @@ uint8_t	trans_data_from_string
                         if ( !isdigit( *sym++ ) ) {
                             return ERROR;
                             }
-                        } 
+                        }
+	                	                
                     if ( outlen != NULL ) {
                         *outlen = 1;
                         }                
@@ -795,7 +796,11 @@ uint8_t	trans_data_from_string
                     {
                         return ERROR;                        
                     }
-
+	            ((uint8_t*)output_buf)[0] = att_flags.byteflags;
+                if (outlen != NULL) {
+	                *outlen = 1;
+                }                
+	                
                 }
             break;
 

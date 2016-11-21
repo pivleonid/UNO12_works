@@ -32,7 +32,7 @@ static struct  _BU_ALL
 };
 
 
-struct _HETERODINE
+static struct _HETERODINE
 {
 	het_flags_t	 multipler;		
 	uint8_t      dds_gain;
@@ -42,14 +42,18 @@ struct _HETERODINE
 	{HETMUL_X2LOW,  10, 321},
 };
 
-static uint8_t			mech_att_gain = 65;
-static att_flags_t		flag_att = {1,0,1,0};
-
+static struct _PRESELECTOR
+{
+	uint8_t			mech_att_gain;
+	att_flags_t		flag_att;
+} pres = { 65, { 1, 0, 1, 0 } };
+	
 static uint8_t			yig = 0;
-static cu_type_sts_t	cu_type = CU_TYPE_HETERODIN;
-
+static cu_type_sts_t	cu_type = CU_TYPE_PRESELECTOR;
 
 /*code==============================================================================================================*/
+
+
 /*=============================================================================================================*/
 /*!  \brief
 
@@ -86,7 +90,7 @@ void set_cu_type(cu_type_sts_t type)
 /*=============================================================================================================*/
 void set_mechatt_gain( uint8_t gain )
     {
-        mech_att_gain = gain;
+        pres.mech_att_gain = gain;
     }
 
 /*=============================================================================================================*/
@@ -99,7 +103,7 @@ void set_mechatt_gain( uint8_t gain )
 /*=============================================================================================================*/
 uint8_t get_mechatt_gain( void )
     {
-        return mech_att_gain;
+        return pres.mech_att_gain;
     }
 
 /*=============================================================================================================*/
@@ -112,7 +116,7 @@ uint8_t get_mechatt_gain( void )
 /*=============================================================================================================*/
 void set_mechatt_flags( const struct  _ATT_FLAGS *flags )
     {
-    flag_att.bitflags = *flags;
+    pres.flag_att.bitflags = *flags;
     }
 
 /*=============================================================================================================*/
@@ -125,7 +129,7 @@ void set_mechatt_flags( const struct  _ATT_FLAGS *flags )
 /*=============================================================================================================*/
 uint8_t get_mechatt_flags( void )
     {
-        return flag_att.byteflags;
+        return pres.flag_att.byteflags;
     }
 
 

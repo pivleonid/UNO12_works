@@ -36,6 +36,9 @@ int     dac_open
 		cu_type_sts_t	type
     )
 {
+	ad9116_idacgain_t	dacgain;	
+	uint8_t				version = 0;
+	
 	/* конфигурируем интерфейсы ЦАПов */
 	if (CU_TYPE_HETERODIN == type)
 	{
@@ -47,9 +50,20 @@ int     dac_open
 	}
 	
 	/* конфигурируем шкалу цап, настраиваем */
-	ad9116_read_id(DAC_01);
+	for (;;)
+	{
+//		dacgain.gain = 33;
+//		ad9116_write_register(DAC_01, AD9116_IDACGAIN_ADDR, &dacgain);
+//		
+//		dacgain.gain = 0;
+//		ad9116_read_register(DAC_01, AD9116_IDACGAIN_ADDR, &dacgain);
+//		
+		version = 0;
+		ad9116_read_register(DAC_01, AD9116_VERSION_ADDR, &version);
+		
+		continue;
+	}
 	
-	;	
     
 	return OK;
 }

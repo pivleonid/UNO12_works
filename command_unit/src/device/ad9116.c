@@ -25,10 +25,10 @@
 
 /*variables=========================================================================================================*/
 static	uint8_t				clock_timer_disabled = 1;		/* флаг указывающий работает или нет тактирующий таймер 1-выключен, 0-включен*/
+uint8_t						verbuf = 0;
 
 /*code==============================================================================================================*/
 
-uint8_t		verbuf = 0;
 
 /*=============================================================================================================*/
 /*!  \brief конфигурируем интерфейсы последовательный и параралельный для управлениея ЦАПом
@@ -51,22 +51,21 @@ int     ad9116_open
 	    gpio_dacspi_open(dac_index);
         
         /* включение тактирующего таймера */
-	    if (clock_timer_disabled)
-	    {
-		    clock_timer_disabled = 0;
-		    /* tim3 ch3 */
-		    pwm_dac_open();		    
-		    gpio_dacpwm_open();		    
-		}
-	    
+//	    if (clock_timer_disabled)
+//	    {
+//		    clock_timer_disabled = 0;
+//		    /* tim3 ch3 */
+//		    pwm_dac_open();		    
+//		    gpio_dacpwm_open();		    
+//		}
+//	    
 //	    for (;;)
 //	    {
 //		    spi_dac_read(dac_index, AD9116_VERSION, &verbuf, 1, 1000);
 //		    continue;		    
-//	    }		    
-//    
-	    	    
-	return OK;
+//	    }    
+	    
+		return OK;
     }
 
 
@@ -88,13 +87,13 @@ int     ad9116_close
 	gpio_dac_close(dac_index);
 	gpio_dacspi_close(dac_index);
 		    
-    if (!clock_timer_disabled)
-    {
-	    gpio_dacpwm_close();
-	    
-	    clock_timer_disabled = 1;
-    }
-	    
+//    if (!clock_timer_disabled)
+//    {
+//	    gpio_dacpwm_close();
+//	    
+//	    clock_timer_disabled = 1;
+//    }
+//	    
 	    
 	    
     return OK;    
@@ -123,8 +122,8 @@ int     ad9116_write_data
 	    case AD9116_SPI:   
 		    {
 					/* для мультиплексированных выходов */
-			    spi_dac_write(dac_index, AD9116_AUXDAC_Q, (uint8_t*)&data.q, 2, 1000);
-			    spi_dac_write(dac_index, AD9116_AUXDAC_I, (uint8_t*)&data.i, 2, 1000);
+			    spi_dac_write(dac_index, AD9116_AUXDAC_Q_ADDR, (uint8_t*)&data.q, 2, 1000);
+			    spi_dac_write(dac_index, AD9116_AUXDAC_I_ADDR, (uint8_t*)&data.i, 2, 1000);
 		    } break;
 		    
 	    case AD9116_PARALLEL:
@@ -155,7 +154,7 @@ int     ad9116_write_data
      \sa 
 */
 /*=============================================================================================================*/
-int     ad9116_write_parralel
+int     ad9116_write_all_parralel
     (
     int                    dac_index,  /*!< [in] индекс цапа 0-3                           */
 	uint16_t               *data,	   /*!< [in] данные для выхода i ЦАПа				    */
@@ -167,6 +166,57 @@ int     ad9116_write_parralel
 	return OK;
 }
 
+
+
+/*=============================================================================================================*/
+/*!  \brief считывание текущих настроек ЦАП
+
+     \return 
+     \retval 
+     \sa 
+*/
+/*=============================================================================================================*/
+int  ad9116_write_register
+		(
+			int							dac_index,  /*!< [in] индекс цапа 0-3                           */
+			uint8_t						adress,
+			void						*data
+		)
+{
+	
+	spi_dac_write(dac_index, adress, (uint8_t*)data, 1, 1000);
+	
+	return OK;
+}
+	
+/*=============================================================================================================*/
+/*!  \brief считывание текущих настроек ЦАП
+
+     \return 
+     \retval 
+     \sa 
+*/
+/*=============================================================================================================*/
+int  ad9116_read_register
+	(
+		int						dac_index,  /*!< [in] индекс цапа 0-3                           */
+		uint8_t					adress,
+		void					*data
+	)
+{
+	uint8_t	read_temp;
+	
+	if (data == NULL) {
+		return ERR;
+	}
+	
+	spi_dac_read(dac_index, adress, &read_temp, 1, 1000);
+	
+	*(uint8_t*)data = read_temp;
+		
+	return OK;
+}
+		
 
 
 
@@ -187,7 +237,7 @@ uint8_t     ad9116_read_id
     
 	    for (;;)
 	    {
-		    spi_dac_read(DAC_01, AD9116_VERSION, &id, 1, 1000);		    
+		    spi_dac_read(DAC_01, AD9116_VERSION_ADDR, &id, 1, 1000);		    
 	    }
 	    
 		return id;    

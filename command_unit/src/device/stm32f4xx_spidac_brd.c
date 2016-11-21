@@ -38,26 +38,31 @@ int spi_dac_open(
 	)    
 {
 	if ( !dac_spi_flags )
-	{
-		
+	{		
+		/* включаем RCC */
+		__SPI2_CLK_ENABLE();
+
+		/* конфигурируем SPI */
 		hspi2.Instance = SPI2;
 		hspi2.Init.Mode = SPI_MODE_MASTER;
 		hspi2.Init.Direction = SPI_DIRECTION_1LINE;
 		hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
-		hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+		hspi2.Init.CLKPolarity = SPI_POLARITY_HIGH;
 		hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
 		hspi2.Init.NSS = SPI_NSS_SOFT;
-		hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+		hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
 		hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
 		hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
 		hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
 		hspi2.Init.CRCPolynomial = 10;
-
 		
 		if (HAL_SPI_Init(&hspi2) != HAL_OK)
 		{
 			return ERR;
-		}		
+		}
+		
+		__HAL_SPI_ENABLE(&hspi2);
+
 	}
 	
 		
@@ -87,7 +92,8 @@ int spi_dac_close(
 		{
 			return ERR;
 		}
-		
+		__HAL_SPI_DISABLE(&hspi2);		
+		__SPI2_CLK_DISABLE();		
 	}
 		
 	return OK;
@@ -113,8 +119,8 @@ int spi_dac_iocntl(
 		
 	case IOCNTL_SPIDAC_RESET:
 		{
-			/* (RESET / PINMD) Logic 0 */		
-			gpio_dacspi_reset_down();		
+			/* (RESET / PINMD) Logic 1 */		
+			gpio_dacspi_reset_up();		
 			/* Get tick */ 
 			tickstart = HAL_GetTick();
 
@@ -141,8 +147,7 @@ int spi_dac_iocntl(
 			while ( (HAL_GetTick() - tickstart) < 10) {
 				continue;
 			}
-			
-			gpio_dacspi_reset_up();
+			gpio_dacspi_reset_down();		
 			
 
 			/* Enable SPI peripheral */
@@ -160,8 +165,8 @@ int spi_dac_iocntl(
 				return ERR;
 			}
 			
-			/* (RESET / PINMD) Logic 0 */		
-			gpio_dacspi_reset_down();		
+			/* (RESET / PINMD) Logic 1 */		
+			gpio_dacspi_reset_up();		
 			/* Get tick */ 
 			tickstart = HAL_GetTick();
 		
@@ -169,10 +174,10 @@ int spi_dac_iocntl(
 			hspi2.Init.Mode = SPI_MODE_MASTER;
 			hspi2.Init.Direction = SPI_DIRECTION_1LINE;
 			hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
-			hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+			hspi2.Init.CLKPolarity = SPI_POLARITY_HIGH;
 			hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
 			hspi2.Init.NSS = SPI_NSS_SOFT;
-			hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+			hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
 			hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
 			hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
 			hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -186,7 +191,7 @@ int spi_dac_iocntl(
 				continue;
 			}
 			
-			gpio_dacspi_reset_up();
+			gpio_dacspi_reset_down();
 		
 			if (HAL_SPI_Init(&hspi2) != HAL_OK)
 			{
@@ -239,14 +244,14 @@ static int spidac_wait_flag_or_timeout
 
 	timeout = (timeout == HAL_MAX_DELAY) ? HAL_MAX_DELAY : timeout;
 	
-	while ( (__HAL_SPI_GET_FLAG(&hspi2, flag) == RESET) == status )
-	{
+//	while ( (__HAL_SPI_GET_FLAG(&hspi2, flag) == RESET) == status )
+//	{
 //		if ((timeout != 0) && ((HAL_GetTick() - tickstart) > timeout))	{
 //				return -1;
 //		}
-		continue;
-	}
-	
+//		continue;
+//	}
+//	
 	return 0;	
 }
 	
@@ -273,25 +278,21 @@ int spi_dac_write(
 	uint8_t		instr_byte = 0;
 	
 	/* проверяем входные переменные на валидность */
-	if ( (addr > AD9116_CLKMODE) && (addr != AD9116_VERSION) )
-	{
+	if ( (addr > AD9116_CLKMODE_ADDR) && (addr != AD9116_VERSION_ADDR) ) {
 		return ERR_SPIDAC_WRNGADRR;
 	}
 
-	if (data == NULL)
-	{
+	if (data == NULL) {
 		return ERR_SPIDAC_NULL;
 	}
 	
-	if ((num == 0) || (num > 4))
-	{
+	if ((num == 0) || (num > 4)) {
 		return ERR_SPIDAC_DATAOUT;		
 	}
 	
 	
 /* передаем instruction byte */
-	if (hspi2.State != HAL_SPI_STATE_READY)
-	{
+	if (hspi2.State != HAL_SPI_STATE_READY) {
 		return ERR_SPIDAC_BUSY;
 	}
 
@@ -332,6 +333,10 @@ int spi_dac_write(
 	while (hspi2.TxXferCount > 0)
 	{
 		/* Wait until TXE flag is set to send data */
+		while ((hspi2.Instance->SR & SPI_FLAG_TXE) == 0)	{
+			continue;
+		}
+		
 		if (spidac_wait_flag_or_timeout(SPI_FLAG_TXE, RESET, timeout) != 0) { 
 			hspi2.ErrorCode |= HAL_SPI_ERROR_FLAG;
 			/* поднимаем соответсвующий CS */
@@ -345,7 +350,11 @@ int spi_dac_write(
 	}
 	
     /* Wait until Busy flag is reset before disabling SPI */
-	if (spidac_wait_flag_or_timeout(SPI_FLAG_BSY, SET, timeout) != 0)
+	while ((hspi2.Instance->SR & SPI_FLAG_BSY) != 0) {
+		continue;
+	}
+	
+	if (spidac_wait_flag_or_timeout(SPI_FLAG_BSY, SET, timeout) != 0)		
 	{ 
 		hspi2.ErrorCode |= HAL_SPI_ERROR_FLAG;
 		/* поднимаем соответсвующий CS */
@@ -422,6 +431,10 @@ int spi_dac_read(
 	hspi2.Instance->DR = (*hspi2.pTxBuffPtr++);
 	hspi2.TxXferCount--;
 
+	while ((hspi2.Instance->SR & SPI_FLAG_BSY) != 0) {
+		continue;
+	}
+
 	if (spidac_wait_flag_or_timeout(SPI_FLAG_BSY, SET, timeout) != 0)
 	{ 
 		hspi2.ErrorCode |= HAL_SPI_ERROR_FLAG;
@@ -442,15 +455,22 @@ int spi_dac_read(
 	hspi2.TxXferSize   = 0;
 	hspi2.TxXferCount  = 0;
 	
-	/* reconfig spi to falling edge CPOL = 1 */
-	hspi2.Instance->CR1 |= SPI_CR1_CPOL;
+	/* reconfig spi to falling edge  CPOL = 0 */
+	hspi2.Instance->CR1 &= ~SPI_CR1_SPE;
+	hspi2.Instance->CR1 &= ~SPI_CR1_CPOL;
+	hspi2.Instance->CR1 |= SPI_CR1_SPE;
 		
+	(void)hspi2.Instance->DR;
 	SPI_1LINE_RX(&hspi2);					/* input enable in bidirectional mode */
 	
     /* Receive data in 8 Bit mode */
 	while (hspi2.RxXferCount > 0)
 	{
 	  /* Wait until RXNE flag is set */
+		while ((hspi2.Instance->SR & SPI_FLAG_RXNE) == 0) {
+			continue;
+		}
+		
 		if (spidac_wait_flag_or_timeout(SPI_FLAG_RXNE, RESET, timeout) != 0)
 		{ 
 			hspi2.ErrorCode |= HAL_SPI_ERROR_FLAG;
@@ -472,13 +492,17 @@ int spi_dac_read(
 //		__HAL_SPI_DISABLE(hspi);
 //	}
 //
+	SPI_1LINE_TX(&hspi2);					/* Output enable in bidirectional mode */
+	
 	/* поднимаем соответсвующий CS */
 	gpio_dacspi_cs_up(dac_index);
 	hspi2.State = HAL_SPI_STATE_READY;
 	
+	/* reconfig spi to rising edge CPOL = 1 */
+	hspi2.Instance->CR1 &= ~SPI_CR1_SPE;
+	hspi2.Instance->CR1 |= SPI_CR1_CPOL;
+	hspi2.Instance->CR1 |= SPI_CR1_SPE;
 
-	/* reconfig spi to rising edge  CPOL = 0 */
-	hspi2.Instance->CR1 &= ~SPI_CR1_CPOL;
 	
 	
 	/* Process Unlocked */

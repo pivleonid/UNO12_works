@@ -69,18 +69,50 @@ int gpio_dac_open
 			{
 				__GPIOB_CLK_ENABLE();		    
 			}
+			/* включаем в любом случае так как на порту стробы данных */
+			__GPIOE_CLK_ENABLE();
+			__GPIOC_CLK_ENABLE();
+			__GPIOG_CLK_ENABLE();
+			
 			GPIO_InitStructure.Pin = DAC_RES_Pin;
 			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
 			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
 			GPIO_InitStructure.Pull = GPIO_NOPULL;
 			HAL_GPIO_Init(DAC_RES_GPIO_Port, &GPIO_InitStructure);        				
-			HAL_GPIO_WritePin(DAC_RES_GPIO_Port, DAC_RES_Pin, GPIO_PIN_SET);			
+			HAL_GPIO_WritePin(DAC_RES_GPIO_Port, DAC_RES_Pin, GPIO_PIN_RESET);			
+			
+			GPIO_InitStructure.Pin = DAC_SPI_SS0_Pin;
+			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+			GPIO_InitStructure.Pull = GPIO_NOPULL;
+			HAL_GPIO_Init(DAC_SPI_SS0_GPIO_Port, &GPIO_InitStructure);
+			
+			GPIO_InitStructure.Pin =  DAC_SPI_SS1_Pin;
+			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+			GPIO_InitStructure.Pull = GPIO_NOPULL;
+			HAL_GPIO_Init(DAC_SPI_SS1_GPIO_Port, &GPIO_InitStructure);        
+
+			GPIO_InitStructure.Pin = DAC_SPI_SS2_Pin;
+			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+			GPIO_InitStructure.Pull = GPIO_NOPULL;
+			HAL_GPIO_Init(DAC_SPI_SS2_GPIO_Port, &GPIO_InitStructure);
+			
+			GPIO_InitStructure.Pin = DAC_SPI_SS3_Pin;
+			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+			GPIO_InitStructure.Pull = GPIO_NOPULL;
+			HAL_GPIO_Init(DAC_SPI_SS3_GPIO_Port, &GPIO_InitStructure);        			
+			
+			HAL_GPIO_WritePin(DAC_SPI_SS0_GPIO_Port, DAC_SPI_SS0_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(DAC_SPI_SS1_GPIO_Port, DAC_SPI_SS1_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(DAC_SPI_SS2_GPIO_Port, DAC_SPI_SS2_Pin, GPIO_PIN_SET);			
+			HAL_GPIO_WritePin(DAC_SPI_SS3_GPIO_Port, DAC_SPI_SS3_Pin, GPIO_PIN_SET);			
 		}
 		
 		dac_parbus_flags |= dac_index;
 		
-		/* включаем в любом случае так как на порту стробы данных */
-		__GPIOE_CLK_ENABLE();
 		
 		if ( (dac_index & DAC_01) || (dac_index & DAC_67) )
 		{
@@ -95,16 +127,11 @@ int gpio_dac_open
 		
 			/* устанавливаем состояние high */
 			gpio_port_write(GPIOE, 0xFFF);
+
 			
 			/* включаем CS и CLKIO */
 			if (dac_index & DAC_01)
-			{
-				GPIO_InitStructure.Pin = DAC_SPI_SS0_Pin;
-				GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-				GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-				GPIO_InitStructure.Pull = GPIO_NOPULL;
-				HAL_GPIO_Init(DAC_SPI_SS0_GPIO_Port, &GPIO_InitStructure);        				
-								
+			{								
 				GPIO_InitStructure.Pin = DAC_CLK_IO_0_Pin;
 				GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
 				GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
@@ -112,32 +139,23 @@ int gpio_dac_open
 				HAL_GPIO_Init(DAC_CLK_IO_0_GPIO_Port, &GPIO_InitStructure);        				
 				
 				/* устанавливаем состояние high */
-				HAL_GPIO_WritePin(DAC_SPI_SS0_GPIO_Port, DAC_SPI_SS0_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_SET);
 			}
 			
 			if (dac_index & DAC_67)
-			{
-				GPIO_InitStructure.Pin = DAC_SPI_SS3_Pin;
-				GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-				GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-				GPIO_InitStructure.Pull = GPIO_NOPULL;
-				HAL_GPIO_Init(DAC_SPI_SS3_GPIO_Port, &GPIO_InitStructure);        
-				
+			{	
 				GPIO_InitStructure.Pin = DAC_CLK_IO_3_Pin;
 				GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
 				GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
 				GPIO_InitStructure.Pull = GPIO_NOPULL;
 				HAL_GPIO_Init(DAC_CLK_IO_3_GPIO_Port, &GPIO_InitStructure);        
 				/* устанавливаем состояние high */
-				HAL_GPIO_WritePin(DAC_SPI_SS3_GPIO_Port, DAC_SPI_SS3_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_SET);
 			}
 			
 		}
 		if (dac_index & DAC_23)
 		{
-			__GPIOC_CLK_ENABLE();
 			GPIO_InitStructure.Pin =    GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
 										GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 |
 										GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11;
@@ -148,14 +166,7 @@ int gpio_dac_open
 			/* устанавливаем состояние high */
 			gpio_port_write(GPIOC, 0xFFF);
 
-
-			/* включаем CS и CLKIO */
-			GPIO_InitStructure.Pin =  DAC_SPI_SS1_Pin;
-			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-			GPIO_InitStructure.Pull = GPIO_NOPULL;
-			HAL_GPIO_Init(DAC_SPI_SS1_GPIO_Port, &GPIO_InitStructure);        
-						
+			/* включаем CS и CLKIO */						
 			GPIO_InitStructure.Pin =  DAC_CLK_IO_1_Pin;
 			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
 			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
@@ -163,12 +174,10 @@ int gpio_dac_open
 			HAL_GPIO_Init(DAC_CLK_IO_1_GPIO_Port, &GPIO_InitStructure);        
 			
 			/* устанавливаем состояние high */
-			HAL_GPIO_WritePin(DAC_SPI_SS1_GPIO_Port, DAC_SPI_SS1_Pin, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_SET);
 		}
 		if (dac_index & DAC_45)
 		{
-			__GPIOG_CLK_ENABLE();
 			GPIO_InitStructure.Pin =    GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
 										GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 |
 										GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11;
@@ -180,13 +189,7 @@ int gpio_dac_open
 			gpio_port_write(GPIOG, 0xFFF);
 
 			
-			/* включаем CS и CLKIO */			
-			GPIO_InitStructure.Pin = DAC_SPI_SS2_Pin;
-			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-			GPIO_InitStructure.Pull = GPIO_NOPULL;
-			HAL_GPIO_Init(DAC_SPI_SS2_GPIO_Port, &GPIO_InitStructure);        
-			
+			/* включаем CS и CLKIO */						
 			GPIO_InitStructure.Pin = DAC_CLK_IO_2_Pin;
 			GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
 			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
@@ -194,7 +197,6 @@ int gpio_dac_open
 			HAL_GPIO_Init(DAC_CLK_IO_2_GPIO_Port, &GPIO_InitStructure);        
 			
 			/* устанавливаем состояние high */
-			HAL_GPIO_WritePin(DAC_SPI_SS2_GPIO_Port, DAC_SPI_SS2_Pin, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_SET);
 		}
 		
@@ -232,13 +234,7 @@ int gpio_dac_close
 		    
 			/* включаем CS и CLKIO */
 		    if (dac_index & DAC_01)
-		    {
-			    GPIO_InitStructure.Pin = DAC_SPI_SS0_Pin;
-			    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
-			    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-			    GPIO_InitStructure.Pull = GPIO_NOPULL;
-			    HAL_GPIO_Init(DAC_SPI_SS0_GPIO_Port, &GPIO_InitStructure);        				
-								
+		    {								
 			    GPIO_InitStructure.Pin = DAC_CLK_IO_0_Pin;
 			    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
 			    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
@@ -247,13 +243,7 @@ int gpio_dac_close
 		    }
 			
 		    if (dac_index & DAC_67)
-		    {
-			    GPIO_InitStructure.Pin = DAC_SPI_SS3_Pin;
-			    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
-			    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-			    GPIO_InitStructure.Pull = GPIO_NOPULL;
-			    HAL_GPIO_Init(DAC_SPI_SS3_GPIO_Port, &GPIO_InitStructure);        
-				
+		    {				
 			    GPIO_InitStructure.Pin = DAC_CLK_IO_3_Pin;
 			    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
 			    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
@@ -273,13 +263,7 @@ int gpio_dac_close
 		    HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 		    __GPIOC_CLK_DISABLE();		    
 
-  			/* включаем CS и CLKIO */
-		    GPIO_InitStructure.Pin =  DAC_SPI_SS1_Pin;
-		    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
-		    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-		    GPIO_InitStructure.Pull = GPIO_NOPULL;
-		    HAL_GPIO_Init(DAC_SPI_SS1_GPIO_Port, &GPIO_InitStructure);        
-						
+  			/* включаем CS и CLKIO */						
 		    GPIO_InitStructure.Pin =  DAC_CLK_IO_1_Pin;
 		    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
 		    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
@@ -298,30 +282,46 @@ int gpio_dac_close
 		    __GPIOG_CLK_DISABLE();
 		    
 			
-   			/* включаем CS и CLKIO */			
-		    GPIO_InitStructure.Pin = DAC_SPI_SS2_Pin;
-		    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
-		    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-		    GPIO_InitStructure.Pull = GPIO_NOPULL;
-		    HAL_GPIO_Init(DAC_SPI_SS2_GPIO_Port, &GPIO_InitStructure);        
-			
+   			/* включаем CS и CLKIO */					
 		    GPIO_InitStructure.Pin = DAC_CLK_IO_2_Pin;
 		    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
 		    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
 		    GPIO_InitStructure.Pull = GPIO_NOPULL;
 		    HAL_GPIO_Init(DAC_CLK_IO_2_GPIO_Port, &GPIO_InitStructure);			
 	    }
-
-	    
 	    
 		/* если все тактирующие сигналы портов GPIO выключены выключаем reset  */
 	    if (dac_parbus_flags == 0)		
-		{
+		{			
 			GPIO_InitStructure.Pin = DAC_RES_Pin;
 		    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
 		    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
 		    GPIO_InitStructure.Pull = GPIO_NOPULL;
 		    HAL_GPIO_Init(DAC_RES_GPIO_Port, &GPIO_InitStructure);        				
+			
+			GPIO_InitStructure.Pin = DAC_SPI_SS0_Pin;
+			GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
+			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+			GPIO_InitStructure.Pull = GPIO_NOPULL;
+			HAL_GPIO_Init(DAC_SPI_SS0_GPIO_Port, &GPIO_InitStructure);        				
+			
+			GPIO_InitStructure.Pin =  DAC_SPI_SS1_Pin;
+			GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
+			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+			GPIO_InitStructure.Pull = GPIO_NOPULL;
+			HAL_GPIO_Init(DAC_SPI_SS1_GPIO_Port, &GPIO_InitStructure);        
+			
+			GPIO_InitStructure.Pin = DAC_SPI_SS2_Pin;
+			GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
+			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+			GPIO_InitStructure.Pull = GPIO_NOPULL;
+			HAL_GPIO_Init(DAC_SPI_SS2_GPIO_Port, &GPIO_InitStructure);        
+			
+			GPIO_InitStructure.Pin = DAC_SPI_SS3_Pin;
+			GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
+			GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+			GPIO_InitStructure.Pull = GPIO_NOPULL;
+			HAL_GPIO_Init(DAC_SPI_SS3_GPIO_Port, &GPIO_InitStructure);        			
 	    }
 
 	    
@@ -350,7 +350,6 @@ int gpio_dacspi_open
 		{
 			__GPIOB_CLK_ENABLE();		    
 		}		
-		__SPI2_CLK_ENABLE();
 
 		        /* линии данных */
 		         /**SPI2 GPIO Configuration    
@@ -365,6 +364,13 @@ int gpio_dacspi_open
 		GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 		GPIO_InitStructure.Alternate = GPIO_AF5_SPI2;
 		HAL_GPIO_Init(DAC_SPI_GPIO_Port, &GPIO_InitStructure);			
+		
+		GPIO_InitStructure.Pin = DAC_MISO_Pin;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
+		GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+		GPIO_InitStructure.Pull = GPIO_NOPULL;
+		HAL_GPIO_Init(DAC_SPI_GPIO_Port, &GPIO_InitStructure);        				
+		
 	}
 	dac_working_flags |= dac_index;
 	
@@ -403,9 +409,7 @@ int gpio_dacspi_close
 		    GPIO_InitStructure.Pull = GPIO_NOPULL;
 		    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 		    GPIO_InitStructure.Alternate = 0;
-		    HAL_GPIO_Init(DAC_SPI_GPIO_Port, &GPIO_InitStructure);
-    
-		    __SPI2_CLK_DISABLE();
+		    HAL_GPIO_Init(DAC_SPI_GPIO_Port, &GPIO_InitStructure);   
 	    }
 	    	    
 	    return OK;

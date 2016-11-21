@@ -44,6 +44,7 @@ typedef	struct _DAC_VALUES
 		uint16_t	i;	
 	} dac_values_t;
 	
+	
 /*prototypes========================================================================================================*/
 	int     ad9116_open
 	    (
@@ -61,7 +62,43 @@ typedef	struct _DAC_VALUES
 		enum AD9116_INTERFACE   interface,  /*!< [in] интерфейс по которому передаютс€ данные   */
 		dac_values_t			data		/*!< [in] данные дл€ выхода i и q ÷јѕа			    */
 		);
+	
+	int     ad9116_write_all_parralel
+	    (
+	    int                    dac_index,  /*!< [in] индекс цапа 0-3                           */
+		uint16_t               *data,	   /*!< [in] данные дл€ выхода i ÷јѕа				    */
+		uint8_t                len		   /*!< [in] данные дл€ выхода q ÷јѕа    */
+		);
 
+	int  ad9116_write_register
+		(
+			int							dac_index,  /*!< [in] индекс цапа 0-3                           */
+			uint8_t						adress,
+			void						*data
+		);
+	
+	int  ad9116_read_register
+		(
+			int							dac_index,  /*!< [in] индекс цапа 0-3                           */
+		uint8_t						adress,
+		void						*data
+		);
+	
+	
+	
+//	int  ad9116_write_settings
+//		(
+//			int							dac_index,  /*!< [in] индекс цапа 0-3                           */
+//			const ad9116_settings_t		*settings	/*!< [in]  */
+//		);
+//	
+//	ad9116_settings_t ad9116_read_settings
+//		(
+//			int							dac_index,  /*!< [in] индекс цапа 0-3                           */
+//		);
+//	
+	
+	
 	uint8_t     ad9116_read_id
 	    (
 	     int                    dac_index   /*!< [in] индекс цапа 0-3                           */

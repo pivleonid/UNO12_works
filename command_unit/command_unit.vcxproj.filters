@@ -47,6 +47,10 @@
     <Filter Include="Source files\board specific files">
       <UniqueIdentifier>{0da57f49-54f9-4b0e-80c6-40a29ebbf39f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VisualGDB settings">
+      <UniqueIdentifier>{f50f9c8d-ecdf-4696-bb83-74e828a1886a}</UniqueIdentifier>
+      <Extensions>*.vgdbsettings</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="usbd_cdc_if.c">
@@ -669,5 +673,10 @@
     <None Include="stm32.mak">
       <Filter>Source files\Device-specific files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="stm32.xml">
+      <Filter>VisualGDB settings</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
