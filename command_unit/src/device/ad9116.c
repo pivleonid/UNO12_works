@@ -47,8 +47,10 @@ int     ad9116_open
 	    gpio_dac_open(dac_index);
     
         /* включение интерфейса SPI2 */
-	    spi_dac_open(dac_index);    
-	    gpio_dacspi_open(dac_index);
+//	    	    gpio_dac_spi_mode(dac_index);
+	    
+//	    spi_dac_open(dac_index);    
+//	    gpio_dacspi_open(dac_index);
         
         /* включение тактирующего таймера */
 //	    if (clock_timer_disabled)
@@ -64,6 +66,9 @@ int     ad9116_open
 //		    spi_dac_read(dac_index, AD9116_VERSION, &verbuf, 1, 1000);
 //		    continue;		    
 //	    }    
+	    
+	    gpio_dacspi_close(dac_index);
+   	    gpio_dac_pinmode(dac_index);
 	    
 		return OK;
     }
@@ -116,29 +121,23 @@ int     ad9116_write_data
 	 dac_values_t			data		/*!< [in] данные дл€ выхода i и q ÷јѕа			    */
 	)
     {
-    /**/
+	    /* переводим reset в high если в низу */
+			    
 	    switch (interface)
 	    {
-	    case AD9116_SPI:   
-		    {
-					/* дл€ мультиплексированных выходов */
-			    spi_dac_write(dac_index, AD9116_AUXDAC_Q_ADDR, (uint8_t*)&data.q, 2, 1000);
-			    spi_dac_write(dac_index, AD9116_AUXDAC_I_ADDR, (uint8_t*)&data.i, 2, 1000);
-		    } break;
-		    
 	    case AD9116_PARALLEL:
 		    {
 			    if (dac_index & DAC_01) {
-				    gpio_dac_write_01(data.i , data.q);
+				    gpio_dac_write_01(data.q, data.i);
 			    } else
 			    if (dac_index & DAC_23) {
-				    gpio_dac_write_23(data.i, data.q);
+				    gpio_dac_write_23(data.q, data.i);
 			    } else
 			    if (dac_index & DAC_45) {
-				    gpio_dac_write_45(data.i, data.q);
+				    gpio_dac_write_45(data.q, data.i);
 			    } else
 			    if (dac_index & DAC_67) {
-				    gpio_dac_write_67(data.i, data.q);
+				    gpio_dac_write_67(data.q, data.i);
 			    }
 		    } break;
 	    }

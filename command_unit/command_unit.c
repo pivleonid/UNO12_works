@@ -1,6 +1,9 @@
 #include "fsm_protocol_cdc.h"
 #include "cmd_proc.h"
+#include "hrdwr_func.h"
 #include "device/dac.h"
+#include "device/InitializationUNO.h"
+#include "device/CPLD.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -122,11 +125,17 @@ void periph_open(void)
 	
 	/* TODO если нет типа блока, нужно прописать его отдельной командой с терминала */
 	;
+	if (get_cu_type() == CU_TYPE_HETERODIN){
+		(void)uno_open(0);
+		(void)uno_open(1);
+	}
 		
 	/* инициализируем переферию в сответсвии с типом элемента АТ */	
-	//(void)dac_open(get_cu_type());
+	(void)dac_open(get_cu_type());
 	
 	/* cpld open  */
+	cpld_open();
+	
 	/* if (het) uno_open */
 	;
 	/* slave_spi_open */

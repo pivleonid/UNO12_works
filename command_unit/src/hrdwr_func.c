@@ -1,15 +1,15 @@
 /* Sep 16, 2015 */
 
 /*!  \file 	hrdwr_func.c
- *   \brief  mock функции для обработчиков команд 
+ *   \brief  функции для обработчиков команд и хранение текущих значений аппаратных коэффициэнтов
  *   \details  
- *
- *
- *
  */
 
 /*includes==========================================================================================================*/
 #include "hrdwr_func.h"
+#include "device/dac.h"
+#include "device/InitializationUNO.h"
+#include "device/CPLD.h"
 
 /*defines===========================================================================================================*/
 
@@ -22,8 +22,8 @@
 
 /*variables=========================================================================================================*/
 
-static uint8_t      id_now;
-static uint8_t      code_now;
+//static uint8_t      id_now;
+//static uint8_t      code_now;
 static struct  _BU_ALL
 {
 	uint16_t     daccode[8];
@@ -143,8 +143,9 @@ uint8_t get_mechatt_flags( void )
 /*=============================================================================================================*/
 void set_decoder_code( uint8_t  id, uint8_t code )
     {
-        id_now = id;
-        code_now = code;
+	    cpld_write(id, code);
+//        id_now = id;
+//        code_now = code;
     }
 
 /*=============================================================================================================*/
@@ -155,9 +156,13 @@ void set_decoder_code( uint8_t  id, uint8_t code )
      \sa 
 */
 /*=============================================================================================================*/
+extern int VCP_write(const void *pBuffer, int size);
 void set_dac_code( uint8_t  id, uint16_t code )
     {
-        bu.daccode[id] = code;
+	    
+	    if (dac_write(id, code) == OK) {
+		    bu.daccode[id] = code;		    
+	    }
     }
 
 /*=============================================================================================================*/
@@ -170,6 +175,12 @@ void set_dac_code( uint8_t  id, uint16_t code )
 /*=============================================================================================================*/
 uint16_t get_dac_code(uint8_t  id)
 {
+	uint16_t	code;
+	
+	if (dac_read(id, &code) == OK) {
+		bu.daccode[id] = code;
+	}
+	
 	return bu.daccode[id];
 }
 
@@ -267,7 +278,19 @@ uint32_t get_het_freq_sts(int het_index)
 /*=============================================================================================================*/
 void set_het_mul(uint8_t code)
 {
-	heterodine[0].multipler.byteflags = heterodine[1].multipler.byteflags = code & 0x3;	
+	if (heterodine[0].multipler.bitflags.mulstate != (code & 0x3))
+	{
+		heterodine[0].multipler.byteflags = heterodine[1].multipler.byteflags = code & 0x3;	
+		
+		/* передача кода в cpld */
+		switch (heterodine[0].multipler.bitflags.mulstate)
+		{
+		case HETMUL_OFF:		cpld_write(CPLD_ID_UNOMULT, CPLD_CODE_UNOMULT_X1MXLow); break;
+		case HETMUL_X2LOW:		cpld_write(CPLD_ID_UNOMULT, CPLD_CODE_UNOMULT_X2MXLow); break;
+		case HETMUL_X2HIGH:		cpld_write(CPLD_ID_UNOMULT, CPLD_CODE_UNOMULT_X2MXHigh); break;
+		case HETMUL_X4HIGH:		cpld_write(CPLD_ID_UNOMULT, CPLD_CODE_UNOMULT_X4MXHigh); break;
+		}
+	}
 }
 
 
@@ -279,21 +302,13 @@ void set_het_mul(uint8_t code)
      \sa 
 */
 /*=============================================================================================================*/
-void set_het_gain(int het_index, uint8_t gain)
-{
-	heterodine[het_index].dds_gain = gain;	
+void set_het(int het_index, uint8_t gain, uint32_t freq)
+{	
+	if (uno_write(het_index, ((float) freq)/10, gain) == OK)
+	{
+		heterodine[het_index].dds_gain = gain;	
+		heterodine[het_index].dds_freq = gain;			
+	}
 }
 
-/*=============================================================================================================*/
-/*!  \brief
-
-     \return 
-     \retval 
-     \sa 
-*/
-/*=============================================================================================================*/
-void set_het_freq(int het_index, uint32_t freq)
-{
-	heterodine[het_index].dds_freq = freq;	
-}
 

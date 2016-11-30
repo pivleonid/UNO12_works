@@ -48,7 +48,7 @@ int spi_dac_open(
 		hspi2.Init.Direction = SPI_DIRECTION_1LINE;
 		hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
 		hspi2.Init.CLKPolarity = SPI_POLARITY_HIGH;
-		hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+		hspi2.Init.CLKPhase = SPI_PHASE_2EDGE;
 		hspi2.Init.NSS = SPI_NSS_SOFT;
 		hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
 		hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
@@ -175,7 +175,7 @@ int spi_dac_iocntl(
 			hspi2.Init.Direction = SPI_DIRECTION_1LINE;
 			hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
 			hspi2.Init.CLKPolarity = SPI_POLARITY_HIGH;
-			hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+			hspi2.Init.CLKPhase = SPI_PHASE_2EDGE;
 			hspi2.Init.NSS = SPI_NSS_SOFT;
 			hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
 			hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
@@ -364,8 +364,8 @@ int spi_dac_write(
 		return ERR_SPIDAC_TIMEOUT;
 	}
  
-	hspi2.State = HAL_SPI_STATE_READY; 
-
+	hspi2.State = HAL_SPI_STATE_READY;
+		
 	/* поднимаем соответсвующий CS */
 	gpio_dacspi_cs_up(dac_index);
 	
@@ -457,11 +457,13 @@ int spi_dac_read(
 	
 	/* reconfig spi to falling edge  CPOL = 0 */
 	hspi2.Instance->CR1 &= ~SPI_CR1_SPE;
-	hspi2.Instance->CR1 &= ~SPI_CR1_CPOL;
+	hspi2.Instance->CR1 &= ~(SPI_CR1_CPOL);
+//	hspi2.Instance->CR1 |= (SPI_CR1_CPOL);
 	hspi2.Instance->CR1 |= SPI_CR1_SPE;
 		
-	(void)hspi2.Instance->DR;
 	SPI_1LINE_RX(&hspi2);					/* input enable in bidirectional mode */
+	(void)hspi2.Instance->DR;
+	(void)hspi2.Instance->DR;
 	
     /* Receive data in 8 Bit mode */
 	while (hspi2.RxXferCount > 0)
@@ -500,7 +502,8 @@ int spi_dac_read(
 	
 	/* reconfig spi to rising edge CPOL = 1 */
 	hspi2.Instance->CR1 &= ~SPI_CR1_SPE;
-	hspi2.Instance->CR1 |= SPI_CR1_CPOL;
+//	hspi2.Instance->CR1 &= ~(SPI_CR1_CPOL);
+	hspi2.Instance->CR1 |= (SPI_CR1_CPOL);
 	hspi2.Instance->CR1 |= SPI_CR1_SPE;
 
 	

@@ -80,6 +80,10 @@ extern "C" {
 	int gpio_dacpwm_open(void);
 	int gpio_dacpwm_close(void);
 
+	int gpio_dac_pinmode
+		( 
+		int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+		);
 
 #ifdef	__cplusplus
 	}

@@ -36,10 +36,23 @@ extern "C" {
 
     
 /*prototypes========================================================================================================*/
-int dac_open
+int		dac_open
 (
-	cu_type_sts_t type
+	cu_type_sts_t	type
 );
+	
+int     dac_write
+(
+	uint8_t		index,	/*!< [in] индекс цапа относительно БУ 0-7		*/
+	uint16_t	code	/*!< [in] код пишушийся в соответвующий индекс	*/
+);
+	
+int     dac_read
+(
+	uint8_t		index,	/*!< [in] индекс цапа относительно БУ 0-7		*/
+	uint16_t	*code	/*!< [in] код пишушийся в соответвующий индекс	*/
+);
+	
  
 #ifdef	__cplusplus
 	}

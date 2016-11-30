@@ -8,7 +8,7 @@
 
 /*includes==========================================================================================================*/
 #include "freqcmd_quick.h"
-#include "cpld_bus.h"
+#include "cpld.h"
 #include <stm32f4xx_hal.h>
 
 /*defines===========================================================================================================*/
@@ -46,26 +46,26 @@ void freqcmd
     
 
     /* запись в шину cpld кода и данных */
-    if ( cs == CPLD_SELECT_CS0 )    {
-        GPIOD->BSRR = CPLD_CS0;    
-    } else {
-        GPIOD->BSRR = CPLD_CS1;        
-    }
-    GPIOD->BSRR = CPLD_WR;    
-    GPIOD->BSRR = (((uint32_t)(~code)) << 16)  || code;
-    GPIOD->BSRR = (uint32_t)CPLD_WR << 16;    
-
-    GPIOD->BSRR = CPLD_WR;    
-    GPIOD->BSRR = (((uint32_t)(~data)) << 16)  || data;
-    GPIOD->BSRR = (uint32_t)CPLD_WR << 16;    
-
-    if ( cs == CPLD_SELECT_CS0 ) {
-        GPIOD->BSRR = (uint32_t)CPLD_CS0 << 16;    
-    }
-    else {
-        GPIOD->BSRR = (uint32_t)CPLD_CS1 << 16;        
-    }
-
+//    if ( cs == CPLD_SELECT_CS0 )    {
+//        GPIOD->BSRR = CPLD_CS0;    
+//    } else {
+//        GPIOD->BSRR = CPLD_CS1;        
+//    }
+//    GPIOD->BSRR = CPLD_WR;    
+//    GPIOD->BSRR = (((uint32_t)(~code)) << 16)  || code;
+//    GPIOD->BSRR = (uint32_t)CPLD_WR << 16;    
+//
+//    GPIOD->BSRR = CPLD_WR;    
+//    GPIOD->BSRR = (((uint32_t)(~data)) << 16)  || data;
+//    GPIOD->BSRR = (uint32_t)CPLD_WR << 16;    
+//
+//    if ( cs == CPLD_SELECT_CS0 ) {
+//        GPIOD->BSRR = (uint32_t)CPLD_CS0 << 16;    
+//    }
+//    else {
+//        GPIOD->BSRR = (uint32_t)CPLD_CS1 << 16;        
+//    }
+//
 
 
 

@@ -484,8 +484,7 @@ static err_code_t  set_uno( void* in_data, void* answ_data )
 	    
 	set_het_mul(((uint8_t*)in_data)[0] & 0x3);
     memcpy( &tempfreq, &((uint8_t*)in_data)[2], 4 );	    
-	set_het_gain(index, ((uint8_t*)in_data)[1] );	    
-	set_het_freq(index, tempfreq);
+	set_het(index, ((uint8_t*)in_data)[1], tempfreq );	    
 	    
     return _RESULT_OK;        
     }
@@ -623,7 +622,7 @@ uint8_t	trans_data_from_string
             case CMDCODE_FREQ:
                 {
                 uint16_t freq;
-                *sym = string;
+                sym = string;
                     
                 freq = strtol( string, end, 16 );
                 if ( *end == NULL ) {
@@ -639,7 +638,7 @@ uint8_t	trans_data_from_string
             case CMDCODE_YIG: 
                 {
                     uint8_t code;
-                    *sym = string;
+                    sym = string;
                             
                     code = strtol( string, end, 10 );
                     ((uint8_t*)output_buf)[0] = (code >> 0) & 0xFF;
@@ -661,7 +660,7 @@ uint8_t	trans_data_from_string
 				uint8_t id;
 				uint8_t code;
                     
-				*sym = string;
+				sym = string;
 				id = strtol(string, end, 16);
 				if (*end == NULL) {
 					return ERROR;                    
@@ -680,12 +679,13 @@ uint8_t	trans_data_from_string
                     uint8_t id;
                     uint16_t code;
                     
-                    *sym = string;
+                    sym = string;
                     id = strtol( string, end, 16 );
                     if ( *end == NULL ) {
                         return ERROR;                    
                     }	                
 					code =  strtol( *end, end, 16 ) & 0xFFF;
+	                	                
                     ((uint8_t*)output_buf)[0] = id;
                     memcpy( &((uint8_t*)output_buf)[1], &code, 2 );
 	                
@@ -701,7 +701,7 @@ uint8_t	trans_data_from_string
                     uint32_t    freq;
                     uint16_t    gain;
                 
-                    *sym = string;
+                    sym = string;
                     id = strtol( string, end, 16 );
                     if ( *end == NULL ) {
                         return ERROR;                    
@@ -731,7 +731,7 @@ uint8_t	trans_data_from_string
                 {
                     int32_t chslo;
                 
-                    *sym = string;
+                    sym = string;
                         
                     chslo = strtol( string, end, 10 );
                     ((uint8_t*)output_buf)[0] = (chslo >> 0) & 0xFF;
@@ -825,7 +825,7 @@ uint8_t	trans_data_from_string
 	            uint8_t			no_parse = 0;
 	            
 	            /* номер гетеродина и умножитель */
-	            *sym = string;
+	            sym = string;
 	            hetnum = strtol(string, end, 10);
 	            if (*end == NULL) {
 		            return ERROR;                    

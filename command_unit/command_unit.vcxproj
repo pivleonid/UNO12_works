@@ -133,11 +133,12 @@
     <ClCompile Include="BSP\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c" />
     <ClCompile Include="BSP\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c" />
     <ClCompile Include="command_unit.c" />
-    <ClCompile Include="cpld_bus.c" />
     <ClCompile Include="src\cmd_proc.c" />
     <ClCompile Include="src\device\ad9116.c" />
+    <ClCompile Include="src\device\CPLD.c" />
     <ClCompile Include="src\device\dac.c" />
     <ClCompile Include="src\device\freqcmd_quick.c" />
+    <ClCompile Include="src\device\InitializationUNO.c" />
     <ClCompile Include="src\device\stm32f4xx_gpio_brd.c" />
     <ClCompile Include="src\device\stm32f4xx_pwmdac_brd.c" />
     <ClCompile Include="src\device\stm32f4xx_spidac_brd.c" />
@@ -245,11 +246,12 @@
     <ClInclude Include="BSP\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h" />
     <ClInclude Include="BSP\STM32_USB_Device_Library\Core\Inc\usbd_def.h" />
     <ClInclude Include="BSP\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h" />
-    <ClInclude Include="cpld_bus.h" />
     <ClInclude Include="src\device\ad9116.h" />
     <ClInclude Include="src\device\ad9116r.h" />
+    <ClInclude Include="src\device\CPLD.h" />
     <ClInclude Include="src\device\dac.h" />
     <ClInclude Include="src\device\freqcmd_quick.h" />
+    <ClInclude Include="src\device\InitializationUNO.h" />
     <ClInclude Include="src\device\stm32f4xx_gpio_brd.h" />
     <ClInclude Include="src\device\stm32f4xx_pwmdac_brd.h" />
     <ClInclude Include="src\device\stm32f4xx_spidac_brd.h" />
