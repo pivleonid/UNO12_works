@@ -71,10 +71,10 @@ extern "C" {
 	void gpio_dacspi_reset_up(void);
 	void gpio_dacspi_reset_down(void);
 	
-	int  gpio_dac_write_01(uint16_t	data_1, uint16_t data_2);
-	int  gpio_dac_write_23(uint16_t	data_1, uint16_t data_2);
-	int  gpio_dac_write_45(uint16_t	data_1, uint16_t data_2);
-	int  gpio_dac_write_67(uint16_t	data_1, uint16_t data_2);
+	int  gpio_dac0_write(uint16_t	data_i, uint16_t data_q);
+	int  gpio_dac1_write(uint16_t	data_i, uint16_t data_q);
+	int  gpio_dac2_write(uint16_t	data_i, uint16_t data_q);
+	int  gpio_dac3_write(uint16_t	data_i, uint16_t data_q);
 	int  gpio_dac_write_all(uint16_t *data, uint16_t len);
     
 	int gpio_dacpwm_open(void);
@@ -82,7 +82,7 @@ extern "C" {
 
 	int gpio_dac_pinmode
 		( 
-		int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+		int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC0..DAC67							*/
 		);
 
 #ifdef	__cplusplus

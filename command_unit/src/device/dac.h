@@ -27,10 +27,10 @@ extern "C" {
 
 	
 #define  DAC_ALL	(0x0Fu)			/*	выбор ЦАП при инициализации	*/
-#define  DAC_01		(0x01u)
-#define  DAC_23		(0x02u)
-#define  DAC_45		(0x04u)
-#define  DAC_67		(0x08u)
+#define  DAC0		(0x01u)
+#define  DAC1		(0x02u)
+#define  DAC2		(0x04u)
+#define  DAC3		(0x08u)
 	
 /*types=============================================================================================================*/
 

@@ -57,7 +57,7 @@ void gpio_port_write(GPIO_TypeDef*  GPIOx, uint16_t value)
 /*=============================================================================================================*/
 int gpio_dac_open
 	( 
-	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC0..DAC67							*/
 	)
 	{
 	    GPIO_InitTypeDef    GPIO_InitStructure;    
@@ -78,7 +78,8 @@ int gpio_dac_open
 		GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
 		GPIO_InitStructure.Alternate = 0;
 		HAL_GPIO_Init(DAC_CLK_GPIO_Port, &GPIO_InitStructure);
-		HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
 				
 		GPIO_InitStructure.Pin = DAC_SPI_SS0_Pin;
 		GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -163,12 +164,18 @@ int gpio_dac_open
 		GPIO_InitStructure.Pull = GPIO_NOPULL;
 		HAL_GPIO_Init(DAC_CLK_IO_2_GPIO_Port, &GPIO_InitStructure);        
 		
-		HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_SET);
-		clkio.byte = 0x0F;
-				
+//		HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_SET);
+//		clkio.byte = 0x0F;
+
+		HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_RESET);
+		clkio.byte = 0x00;
+		
 		/* включаем dac_reset и ставим низкий уровень */
 		GPIO_InitStructure.Pin = DAC_RES_Pin;
 		GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -196,14 +203,14 @@ int gpio_dac_open
 /*=============================================================================================================*/
 int gpio_dac_close
 	( 
-	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC0..DAC67							*/
 	)
     {
         GPIO_InitTypeDef    GPIO_InitStructure;
 	    
 	    dac_parbus_flags &= ~dac_index;
 		    
-	    if ((dac_index & DAC_01) || (dac_index & DAC_67))
+	    if ((dac_index & DAC0) || (dac_index & DAC3))
 	    {
 	    	/* включаем парраллельную шину */	
 		    GPIO_InitStructure.Pin =  GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
@@ -215,7 +222,7 @@ int gpio_dac_close
 		    HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);        
 		    
 			/* включаем CS и CLKIO */
-		    if (dac_index & DAC_01)
+		    if (dac_index & DAC0)
 		    {								
 			    GPIO_InitStructure.Pin = DAC_CLK_IO_0_Pin;
 			    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
@@ -224,7 +231,7 @@ int gpio_dac_close
 			    HAL_GPIO_Init(DAC_CLK_IO_0_GPIO_Port, &GPIO_InitStructure);        				
 		    }
 			
-		    if (dac_index & DAC_67)
+		    if (dac_index & DAC3)
 		    {				
 			    GPIO_InitStructure.Pin = DAC_CLK_IO_3_Pin;
 			    GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
@@ -234,7 +241,7 @@ int gpio_dac_close
 		    }
 			
 	    }
-	    if (dac_index & DAC_23)
+	    if (dac_index & DAC1)
 	    {
 		    GPIO_InitStructure.Pin =    GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
 		                                GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 |
@@ -252,7 +259,7 @@ int gpio_dac_close
 		    GPIO_InitStructure.Pull = GPIO_NOPULL;
 		    HAL_GPIO_Init(DAC_CLK_IO_1_GPIO_Port, &GPIO_InitStructure);        			
 	    }
-	    if (dac_index & DAC_45)
+	    if (dac_index & DAC2)
 	    {
 		    GPIO_InitStructure.Pin =    GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
 		                                GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 |
@@ -328,7 +335,7 @@ int gpio_dac_close
 /*=============================================================================================================*/
 int gpio_dacspi_open
 	( 
-	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC0..DAC67							*/
 	)
 {
 	GPIO_InitTypeDef    GPIO_InitStructure;
@@ -377,7 +384,7 @@ int gpio_dacspi_open
 /*=============================================================================================================*/
 int gpio_dacspi_close
 	( 
-	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC0..DAC67							*/
 	)
 {
         GPIO_InitTypeDef    GPIO_InitStructure;
@@ -422,7 +429,7 @@ int gpio_dacspi_close
 /*=============================================================================================================*/
 	int gpio_dac_pinmode
 		( 
-		int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+		int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC0..DAC67							*/
 		)
 {	
     /* SCK-> CLKMD, low */
@@ -454,25 +461,25 @@ int gpio_dacspi_close
 /*=============================================================================================================*/
 void gpio_dacspi_cs_down
 	(
-	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC0..DAC67							*/
 	)
 {
-	if (dac_index & DAC_01)
+	if (dac_index & DAC0)
 	{
 		HAL_GPIO_WritePin(DAC_SPI_SS0_GPIO_Port, DAC_SPI_SS0_Pin, GPIO_PIN_RESET);
 	}
 	else
-	if (dac_index & DAC_23)
+	if (dac_index & DAC1)
 	{
 		HAL_GPIO_WritePin(DAC_SPI_SS1_GPIO_Port, DAC_SPI_SS1_Pin, GPIO_PIN_RESET);		
 	}
 	else
-	if (dac_index & DAC_45)	
+	if (dac_index & DAC2)	
 	{
 		HAL_GPIO_WritePin(DAC_SPI_SS2_GPIO_Port, DAC_SPI_SS2_Pin, GPIO_PIN_RESET);				
 	}
 	else
-	if (dac_index & DAC_67)	
+	if (dac_index & DAC3)	
 	{
 		HAL_GPIO_WritePin(DAC_SPI_SS3_GPIO_Port, DAC_SPI_SS3_Pin, GPIO_PIN_RESET);				
 	}
@@ -487,25 +494,25 @@ void gpio_dacspi_cs_down
 /*=============================================================================================================*/
 void gpio_dacspi_cs_up
 	(
-	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC_01..DAC67							*/
+	int			dac_index		/*!< [in]  определяет индекс микросхемы ЦАП БУ	DAC0..DAC67							*/
 	)
 {
-	if (dac_index & DAC_01)
+	if (dac_index & DAC0)
 	{
 		HAL_GPIO_WritePin(DAC_SPI_SS0_GPIO_Port, DAC_SPI_SS0_Pin, GPIO_PIN_SET);
 	}
 	else
-	if (dac_index & DAC_23)
+	if (dac_index & DAC1)
 	{
 		HAL_GPIO_WritePin(DAC_SPI_SS1_GPIO_Port, DAC_SPI_SS1_Pin, GPIO_PIN_SET);		
 	}
 	else
-	if (dac_index & DAC_45)	
+	if (dac_index & DAC2)	
 	{
 		HAL_GPIO_WritePin(DAC_SPI_SS2_GPIO_Port, DAC_SPI_SS2_Pin, GPIO_PIN_SET);				
 	}
 	else
-	if (dac_index & DAC_67)	
+	if (dac_index & DAC3)	
 	{
 		HAL_GPIO_WritePin(DAC_SPI_SS3_GPIO_Port, DAC_SPI_SS3_Pin, GPIO_PIN_SET);				
 	}
@@ -607,38 +614,49 @@ int gpio_dacpwm_close(void)
      \sa 
 */
 /*=============================================================================================================*/
-int gpio_dac_write_01
+int gpio_dac0_write
 	(
-	uint16_t	data_1,
-	uint16_t	data_2
+	uint16_t	data_i,
+	uint16_t	data_q
 	)
-{	
-	/* выставляем сначала data_1 */
-	/* CLKIO вниз  */		
-	clkio.bits.clkio01 = 0;
-//		clkio.bits.clkio23 = 0;
-//		clkio.bits.clkio45 = 0;
-//		clkio.bits.clkio67 = 0;
-//	
-//	gpio_port_write(GPIOC, data_1);	
-//	gpio_port_write(GPIOG, data_1);	
-	gpio_port_write(GPIOE, data_1 |  (((uint16_t)clkio.byte) << 12));	
+{		
+	/* выставляем сначала data_q - Z */
+	gpio_port_write(GPIOE, data_q | (((uint16_t)clkio.byte) << 12));		
+	HAL_Delay(1);
+	/* CLKIO вниз, falling edge  */		
+	clkio.bits.clkio01 = 0;	
+	HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_RESET);	
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
 	
-//	HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);		
+	HAL_Delay(1);
 	
-	/* выставляем data_2 */
-	/* CLKIO вверх  */		
+	/* выставляем сначала data_i - A */
+	gpio_port_write(GPIOE, data_i |  (((uint16_t)clkio.byte) << 12));	
+	HAL_Delay(1);
+	/* CLKIO вверх rising edge */		
 	clkio.bits.clkio01 = 1;
-//		clkio.bits.clkio23 = 1;
-//		clkio.bits.clkio45 = 1;
-//		clkio.bits.clkio67 = 1;
-//	gpio_port_write(GPIOC, data_2);	
-//	gpio_port_write(GPIOG, data_2);	
-	gpio_port_write(GPIOE, data_2 | (((uint16_t)clkio.byte) << 12));		
+	HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);		
+
+	HAL_Delay(1);
 	
-//	HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_SET);	
-	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);
+	/* выставляем data_q - B */
+	gpio_port_write(GPIOE, data_q | (((uint16_t)clkio.byte) << 12));		
+	HAL_Delay(1);
+	/* CLKIO вниз falling edge */		
+	clkio.bits.clkio01 = 0;	
+	HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_RESET);	
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
+
+	HAL_Delay(1);
+	
+	/* выставляем сначала data_i - С */
+	gpio_port_write(GPIOE, data_i |  (((uint16_t)clkio.byte) << 12));	
+	HAL_Delay(1);
+	/* CLKIO вверх rising edge */		
+	clkio.bits.clkio01 = 1;
+	HAL_GPIO_WritePin(DAC_CLK_IO_0_GPIO_Port, DAC_CLK_IO_0_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);		
 	
 	return OK;
 }
@@ -652,27 +670,50 @@ int gpio_dac_write_01
      \sa 
 */
 /*=============================================================================================================*/
-int gpio_dac_write_23
+int gpio_dac1_write
 	(
-	uint16_t	data_1,
-	uint16_t	data_2
+	uint16_t	data_i,
+	uint16_t	data_q
 	)
 {
-	/* выставляем сначала data_1 */
-	gpio_port_write(GPIOC, data_1);	
-	
-	/* CLKIO вниз  */		
-	clkio.bits.clkio23 = 0;
-	HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_RESET);
+	/* выставляем data_q */
+	/* выставляем сначала data_q - Z */
+	gpio_port_write(GPIOC, data_q);		
+	HAL_Delay(1);
+	/* CLKIO вниз, falling edge  */		
+	clkio.bits.clkio23 = 0;	
+	HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_RESET);	
 	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
-
-	/* выставляем data_2 */
-	gpio_port_write(GPIOC, data_2);	
 	
-	/* CLKIO вверх  */		
+	HAL_Delay(1);
+	
+	/* выставляем сначала data_i - A */
+	gpio_port_write(GPIOC, data_i);	
+	HAL_Delay(1);
+	/* CLKIO вверх rising edge */		
 	clkio.bits.clkio23 = 1;
 	HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);		
+	
+	HAL_Delay(1);
+	
+	/* выставляем data_q - B */
+	gpio_port_write(GPIOC, data_q);		
+	HAL_Delay(1);
+	/* CLKIO вниз falling edge */		
+	clkio.bits.clkio23 = 0;	
+	HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_RESET);	
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
+	
+	HAL_Delay(1);
+
+	/* выставляем data_i - С */
+	gpio_port_write(GPIOC, data_i);	
+	HAL_Delay(1);
+	/* CLKIO вверх rising edge */		
+	clkio.bits.clkio23 = 1;
+	HAL_GPIO_WritePin(DAC_CLK_IO_1_GPIO_Port, DAC_CLK_IO_1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);		
 		
 	return OK;
 }
@@ -686,27 +727,49 @@ int gpio_dac_write_23
      \sa 
 */
 /*=============================================================================================================*/
-int gpio_dac_write_45
+int gpio_dac2_write
 	(
-	uint16_t	data_1,
-	uint16_t	data_2
+	uint16_t	data_i,
+	uint16_t	data_q
 	)
 {
-	/* выставляем сначала data_1 */
-	gpio_port_write(GPIOG, data_1 );	
-	
-	/* CLKIO вниз  */		
-	clkio.bits.clkio45 = 0;
-	HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_RESET);
+	/* выставляем сначала data_q - Z */
+	gpio_port_write(GPIOG, data_q );		
+	/* CLKIO вниз, falling edge  */		
+	HAL_Delay(1);
+	clkio.bits.clkio45 = 0;	
+	HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_RESET);	
 	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
-
-	/* выставляем data_2 */
-	gpio_port_write(GPIOG, data_2 );	
 	
-	/* CLKIO вверх  */		
+	HAL_Delay(1);
+	
+	/* выставляем сначала data_i - A */
+	gpio_port_write(GPIOG, data_i );	
+	HAL_Delay(1);
+	/* CLKIO вверх rising edge */		
 	clkio.bits.clkio45 = 1;
 	HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);		
+
+	HAL_Delay(1);
+	
+	/* выставляем data_q - B */
+	gpio_port_write(GPIOG, data_q );		
+	HAL_Delay(1);
+	/* CLKIO вниз falling edge */		
+	clkio.bits.clkio45 = 0;	
+	HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_RESET);	
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
+
+	HAL_Delay(1);
+	
+	/* выставляем сначала data_i - С */
+	gpio_port_write(GPIOG, data_i );	
+	HAL_Delay(1);
+	/* CLKIO вверх rising edge */		
+	clkio.bits.clkio45 = 1;
+	HAL_GPIO_WritePin(DAC_CLK_IO_2_GPIO_Port, DAC_CLK_IO_2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);		
 				
 	return OK;
 }
@@ -720,28 +783,49 @@ int gpio_dac_write_45
      \sa 
 */
 /*=============================================================================================================*/
-int gpio_dac_write_67
+int gpio_dac3_write
 	(
-	uint16_t	data_1,
-	uint16_t	data_2
+	uint16_t	data_i,
+	uint16_t	data_q
 	)
-{
-	/* выставляем сначала data_1 */
-	gpio_port_write(GPIOE, data_1 | (((uint16_t)clkio.byte) << 8));	
-	
-	/* CLKIO вниз  */		
-	clkio.bits.clkio67 = 0;
-	HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);
+{	
+	/* выставляем сначала data_q - Z */
+	gpio_port_write(GPIOE, data_q | (((uint16_t)clkio.byte) << 12));		
+	HAL_Delay(1);
+	/* CLKIO вниз, falling edge  */		
+	clkio.bits.clkio67 = 0;	
+	HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_RESET);	
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
 
-	/* выставляем data_2 */
-	gpio_port_write(GPIOE, data_2 | (((uint16_t)clkio.byte) << 8));	
+	HAL_Delay(1);
 	
-	/* CLKIO вверх  */		
+	/* выставляем сначала data_i - A */
+	gpio_port_write(GPIOE, data_i |  (((uint16_t)clkio.byte) << 12));	
+	HAL_Delay(1);
+	/* CLKIO вверх rising edge */		
 	clkio.bits.clkio67 = 1;
 	HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);
-			
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);		
+	
+	HAL_Delay(1);
+	
+	/* выставляем data_q - B */
+	gpio_port_write(GPIOE, data_q | (((uint16_t)clkio.byte) << 12));		
+	HAL_Delay(1);
+	/* CLKIO вниз falling edge */		
+	clkio.bits.clkio67 = 0;	
+	HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_RESET);	
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_RESET);
+
+	HAL_Delay(1);
+	
+	/* выставляем сначала data_i - С */
+	gpio_port_write(GPIOE, data_i |  (((uint16_t)clkio.byte) << 12));	
+	HAL_Delay(1);
+	/* CLKIO вверх rising edge */		
+	clkio.bits.clkio67 = 1;
+	HAL_GPIO_WritePin(DAC_CLK_IO_3_GPIO_Port, DAC_CLK_IO_3_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DAC_CLK_GPIO_Port, DAC_CLK_Pin, GPIO_PIN_SET);		
 	
 	return OK;
 }

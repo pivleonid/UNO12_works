@@ -15,7 +15,17 @@
 
 
 /*types=============================================================================================================*/
+enum _DACOUTS
+{
+	dacout_i,
+	dacout_q
+};
 
+enum _DACALIVE
+{
+	dacalive_ok,
+	dacalive_not
+};
 
 /*prototypes========================================================================================================*/
 
@@ -23,11 +33,30 @@
 /*variables=========================================================================================================*/
 static dac_values_t dac_buffer[4] = 
 { 
-	{ 0x800, 0x800 },
-	{ 0x800, 0x800 },
-	{ 0x800, 0x800 },
-	{ 0x800, 0x800 },			
+	{ 0x800, 0x800 },						/* DAC0 */
+	{ 0x800, 0x800 },						/* DAC1 */
+	{ 0x800, 0x800 },						/* DAC2 */
+	{ 0x800, 0x800 },						/* DAC3 */
 };
+
+static struct _DAC_ADDRAY
+{
+	int				dac_mask;	
+	enum _DACOUTS	out;
+	enum _DACALIVE	status;
+	dac_values_t	*values;
+} hrdwr_dac_indx[] = 
+{ 
+	{ DAC0, dacout_q, dacalive_ok, &dac_buffer[0]},		//DAC0+ DAC0-
+	{ DAC1, dacout_q, dacalive_ok, &dac_buffer[1]},		//DAC1+ DAC1-
+	{ DAC2, dacout_q, dacalive_ok, &dac_buffer[2]},		//DAC2+ DAC2-
+	{ DAC0, dacout_i, dacalive_ok, &dac_buffer[0]},		//DAC3+ DAC3-
+	{ DAC1, dacout_i, dacalive_ok, &dac_buffer[1]},		//DAC4+ DAC4-
+	{ DAC2, dacout_i, dacalive_ok, &dac_buffer[2]},		//DAC5+ DAC5-
+	{ DAC3, dacout_q, dacalive_ok, &dac_buffer[3]},		//DAC6+ DAC6-
+	{ DAC3, dacout_i, dacalive_ok, &dac_buffer[3]},		//DAC7+ DAC7-
+};
+
 
 
 /*code==============================================================================================================*/
@@ -47,54 +76,67 @@ int     dac_open
 	ad9116_idacgain_t	dacgain;	
 	uint8_t				version = 0;
 	uint8_t				spiconf;
+
+	ad9116_open(DAC_ALL);
 	
-	/* конфигурируем интерфейсы ЦАПов */
+		// TODO  ad9116_ioctl(MODE, SPIMODE);
+		
+		/* получем id со всех ЦАП */
+//		version = 0;
+//		ad9116_read_register(DAC0, AD9116_VERSION_ADDR, &version);
+//		ad9116_read_register(DAC0, AD9116_VERSION_ADDR, &version);
+	;
+	/* если не получили возвращаем код ошибки  */
+	;
+	/* конфигурируем цап */
+	/* IFIRST = 0, IRISING = 1 */
+	;
+
+			// TODO  ad9116_ioctl(MODE, PINMODE);
+	;
+
+#ifdef	DAC_TEST
+	for (;;)
+	{
+		static int16_t i  = 0;
+		static int16_t add = 0x0333;
+		
+		dac_buffer[0].i = ~(dac_buffer[0].q = i & 0x0FFF) & 0x0FFF;
+		dac_buffer[1].i = ~(dac_buffer[1].q = i & 0x0FFF) & 0x0FFF;
+		dac_buffer[2].i = ~(dac_buffer[2].q = i & 0x0FFF) & 0x0FFF;
+		dac_buffer[3].i = ~(dac_buffer[3].q = i & 0x0FFF) & 0x0FFF;
+#endif	
+	
 	if (CU_TYPE_HETERODIN == type)
 	{
-		ad9116_open(DAC_ALL);
-//		ad9116_open(DAC_23);
-//		ad9116_open(DAC_45);	
-//		ad9116_open(DAC_67);	
-//	/* конфигурируем шкалу цап, настраиваем */
-//	for (;;)
-	{
-//		dacgain.gain = 33;
-//		ad9116_write_register(DAC_01, AD9116_IDACGAIN_ADDR, &dacgain);
-//		
-//		dacgain.gain = 0;
-//		ad9116_read_register(DAC_01, AD9116_IDACGAIN_ADDR, &dacgain);
-//		
-////		spiconf = 0;
-//		ad9116_read_register(DAC_01, AD9116_SPICONTROL_ADDR, &spiconf);
-//		
-//		version = 0;
-//		ad9116_read_register(DAC_01, AD9116_VERSION_ADDR, &version);
-//		ad9116_read_register(DAC_01, AD9116_VERSION_ADDR, &version);
+		/* выставляем уровень по умолчанию  */
+		ad9116_write_data(DAC0, AD9116_PARALLEL, dac_buffer[0]);		
+		ad9116_write_data(DAC1, AD9116_PARALLEL, dac_buffer[1]);	
+		ad9116_write_data(DAC2, AD9116_PARALLEL, dac_buffer[2]);			
+		ad9116_write_data(DAC3, AD9116_PARALLEL, dac_buffer[3]);			
 		
-	//	continue;
-	}
-//	} else {
-		;
+	} else 
+	if (CU_TYPE_PRESELECTOR == type) {
+		ad9116_write_data(DAC0, AD9116_PARALLEL, dac_buffer[0]);		
+		ad9116_write_data(DAC1, AD9116_PARALLEL, dac_buffer[1]);	
+		ad9116_write_data(DAC2, AD9116_PARALLEL, dac_buffer[2]);			
+		ad9116_write_data(DAC3, AD9116_PARALLEL, dac_buffer[3]);			
 	}
     
-//	for (;;)
-//	{
-//		static uint16_t i  = 0;
+#ifdef DAC_TEST
+		HAL_Delay(5);
+	
+	//	i = ~i;		
+		i += add;
+		if ( (i + add) & 0xF000)
+//		{	add = -add;	}
+		{	i = 0;	}
 		
-//		dac_buffer[0].i = dac_buffer[0].q = i & 0x0FFF;
-//		dac_buffer[1].i = dac_buffer[1].q = i & 0x0FFF;
-//		dac_buffer[2].i = dac_buffer[2].q = i & 0x0FFF;
-//		dac_buffer[3].i = dac_buffer[3].q = i & 0x0FFF;
-	ad9116_write_data(DAC_01, AD9116_PARALLEL, dac_buffer[0]);		
-	ad9116_write_data(DAC_23, AD9116_PARALLEL, dac_buffer[1]);	
-	ad9116_write_data(DAC_45, AD9116_PARALLEL, dac_buffer[2]);			
-	ad9116_write_data(DAC_67, AD9116_PARALLEL, dac_buffer[3]);			
 		
-//		HAL_Delay(100);
-//	
-//		i = ~i;		
-//	}
-//	
+	}				  
+#endif // DAC_TEST
+		
+	
 	return OK;
 }
 
@@ -126,35 +168,19 @@ int     dac_close
      \sa 
 */
 /*=============================================================================================================*/
-int     dac_write
+int dac_write
     (
-		uint8_t		index,	/*!< [in] индекс цапа относительно БУ 0-7		*/
-		uint16_t	code	/*!< [in] код пишушийся в соответвующий индекс	*/	
+		uint8_t		index,	/*!< [in] индекс выхода цапа относительно БУ 0-7	*/
+		uint16_t	code	/*!< [in] код пишушийся в соответвующий выход		*/	
 	)
-{	
-	int		hrdwr_dac_indx = DAC_01;
-	
-	switch (index) {
-		case 0:
-		case 1:	hrdwr_dac_indx = DAC_01;	break;
-		
-		case 2:
-		case 3: hrdwr_dac_indx = DAC_23;	break;
-		
-		case 4:
-		case 5: hrdwr_dac_indx = DAC_45;	break;
-		
-		case 6:
-		case 7: hrdwr_dac_indx = DAC_67;	break;
+{		
+	switch (hrdwr_dac_indx[index].out)
+	{		
+	case dacout_i:	hrdwr_dac_indx[index].values->i = code & 0xFFF; break;
+	case dacout_q:	hrdwr_dac_indx[index].values->q = code & 0xFFF; break;
 	}
 	
-	if ((index % 2) > 0){
-		dac_buffer[index / 2].i = code;		
-	} else	{
-		dac_buffer[index / 2].q = code;				
-	}
-	
-	ad9116_write_data(hrdwr_dac_indx, AD9116_PARALLEL, dac_buffer[index / 2]);
+	ad9116_write_data(hrdwr_dac_indx[index].dac_mask, AD9116_PARALLEL, *hrdwr_dac_indx[index].values);
 	
 	return OK;	
 }
@@ -178,12 +204,12 @@ int     dac_read
 		return ERR;
 	}
 	
-	if ((index % 2) > 0) {
-		*code = dac_buffer[index / 2].i;		
+	switch (hrdwr_dac_indx[index].out)
+	{		
+	case dacout_i:	*code = hrdwr_dac_indx[index].values->i; break;
+	case dacout_q:	*code = hrdwr_dac_indx[index].values->q; break;
 	}
-	else {
-		*code = dac_buffer[index / 2].q;				
-	}
+		
 	
 	return OK;	
 }

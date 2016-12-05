@@ -25,11 +25,11 @@ extern "C" {
 #define   ERR     (-1)
 #endif
 
-#define  DAC_ALL	(DAC_01 | DAC_23 | DAC_45 | DAC_67)			/*	выбор ЦАП при инициализации	*/
-#define  DAC_01		(0x01u)
-#define  DAC_23		(0x02u)
-#define  DAC_45		(0x04u)
-#define  DAC_67		(0x08u)
+#define  DAC_ALL	(DAC0 | DAC1 | DAC2 | DAC3)			/*	выбор ЦАП при инициализации	*/
+#define  DAC0		(0x01u)			//D3
+#define  DAC1		(0x02u)			//D4
+#define  DAC2		(0x04u)			//D5
+#define  DAC3		(0x08u)			//D6
 	
 	
 /*types=============================================================================================================*/

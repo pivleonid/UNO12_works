@@ -121,23 +121,36 @@ int     ad9116_write_data
 	 dac_values_t			data		/*!< [in] данные дл€ выхода i и q ÷јѕа			    */
 	)
     {
+	    int		i;
 	    /* переводим reset в high если в низу */
 			    
 	    switch (interface)
 	    {
 	    case AD9116_PARALLEL:
 		    {
-			    if (dac_index & DAC_01) {
-				    gpio_dac_write_01(data.q, data.i);
-			    } else
-			    if (dac_index & DAC_23) {
-				    gpio_dac_write_23(data.q, data.i);
-			    } else
-			    if (dac_index & DAC_45) {
-				    gpio_dac_write_45(data.q, data.i);
-			    } else
-			    if (dac_index & DAC_67) {
-				    gpio_dac_write_67(data.q, data.i);
+			    if (dac_index & DAC0) {
+				    gpio_dac0_write(data.i, data.q);
+				    gpio_dac0_write(data.i, data.q);
+				    gpio_dac0_write(data.i, data.q);
+				    gpio_dac0_write(data.i, data.q);
+			    } 
+			    if (dac_index & DAC1) {
+				    gpio_dac1_write(data.i, data.q);
+				    gpio_dac1_write(data.i, data.q);
+				    gpio_dac1_write(data.i, data.q);
+				    gpio_dac1_write(data.i, data.q);
+			    } 
+			    if (dac_index & DAC2) {
+				    gpio_dac2_write(data.i, data.q);
+				    gpio_dac2_write(data.i, data.q);
+				    gpio_dac2_write(data.i, data.q);
+				    gpio_dac2_write(data.i, data.q);
+			    } 
+			    if (dac_index & DAC3) {
+				    gpio_dac3_write(data.i, data.q);
+				    gpio_dac3_write(data.i, data.q);
+				    gpio_dac3_write(data.i, data.q);
+				    gpio_dac3_write(data.i, data.q);
 			    }
 		    } break;
 	    }
@@ -236,7 +249,7 @@ uint8_t     ad9116_read_id
     
 	    for (;;)
 	    {
-		    spi_dac_read(DAC_01, AD9116_VERSION_ADDR, &id, 1, 1000);		    
+		    spi_dac_read(DAC0, AD9116_VERSION_ADDR, &id, 1, 1000);		    
 	    }
 	    
 		return id;    

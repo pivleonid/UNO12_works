@@ -49,7 +49,7 @@ static struct _PRESELECTOR
 } pres = { 65, { 1, 0, 1, 0 } };
 	
 static uint8_t			yig = 0;
-static cu_type_sts_t	cu_type = CU_TYPE_PRESELECTOR;
+static cu_type_sts_t	cu_type = CU_TYPE_HETERODIN;
 
 /*code==============================================================================================================*/
 
@@ -156,10 +156,8 @@ void set_decoder_code( uint8_t  id, uint8_t code )
      \sa 
 */
 /*=============================================================================================================*/
-extern int VCP_write(const void *pBuffer, int size);
 void set_dac_code( uint8_t  id, uint16_t code )
     {
-	    
 	    if (dac_write(id, code) == OK) {
 		    bu.daccode[id] = code;		    
 	    }
