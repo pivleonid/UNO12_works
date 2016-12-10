@@ -68,7 +68,7 @@ typedef enum _CU_TYPE
 struct  _ATT_FLAGS
     {
     uint8_t     on : 1;
-    uint8_t     lna : 1;
+    uint8_t     lna : 2;
     uint8_t     preslna : 1;
     uint8_t     test : 1;
     } ;

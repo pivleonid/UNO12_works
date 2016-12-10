@@ -45,9 +45,9 @@ enum CMD_SIGNAL {
 
 /*prototypes========================================================================================================*/
 
-int VCP_read( void *pBuffer, int size );
-int VCP_write( const void *pBuffer, int size );
-int VCP_get_size( void );
+extern int VCP_read( void *pBuffer, int size );
+extern int VCP_write(const void *pBuffer, int size);
+extern int VCP_get_size(void);
 
 static void cdc_code_parse( int state, int signal );
 static void cdc_data_save( int state, int signal );
@@ -109,7 +109,7 @@ static uint32_t             parse_index = 0;
 static char*				brk_sym = NULL; 
 
 static uint8_t			    output_cdcbuffer[CDC_OUTPUT_BUFSIZE];
-static uint8_t              echo_need = 1;
+static uint8_t              echo_need = 0;
 
 static uint8_t				code_in;
 static uint8_t              *answ_data;
@@ -117,7 +117,6 @@ static err_code_t           answ_code;
 static int                  input_agr_num;
 
 static cmd_code_t			answmsg_code;
-
 
 /*code==============================================================================================================*/
 
@@ -524,13 +523,17 @@ static void cdc_send_data( int state, int signal )
                     len += sprintf( &buf[len], " off" ); 
                     }
                 
-                if ( att_flags.bitflags.lna)
-                    {
-                    len += sprintf( &buf[len], " lnaon" );
-                    }
-                else
-                    {
-                    len += sprintf( &buf[len], " lnaoff" );                    
+	                if (att_flags.bitflags.lna == 1)
+	                {
+		                len += sprintf(&buf[len], " lnalow");
+	                }
+	                else if(att_flags.bitflags.lna == 2)
+	                {
+		                len += sprintf(&buf[len], " lnahigh");
+	                }
+	                else
+	                {
+						len += sprintf( &buf[len], " lnaoff" );                    
                     }
                 
                 if ( att_flags.bitflags.preslna) {

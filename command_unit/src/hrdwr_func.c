@@ -12,6 +12,14 @@
 #include "device/CPLD.h"
 
 /*defines===========================================================================================================*/
+#define MSHU_ID			(0x01u)
+#define MSHUPRES_ID		(0x02u)
+#define MECHATT_ID		(0x03u)
+#define RF_TEST_ID		(0x04u)
+#define PHILTERES_ID	(0x05u)
+#define DIGATT_ID		(0x06u)
+#define PRES_ONOFF_ID	(0x07u)
+#define L_H_BAND_ID		(0x08u)
 
 
 /*types=============================================================================================================*/
@@ -116,7 +124,25 @@ uint8_t get_mechatt_gain( void )
 /*=============================================================================================================*/
 void set_mechatt_flags( const struct  _ATT_FLAGS *flags )
     {
-    pres.flag_att.bitflags = *flags;
+	    struct  _ATT_FLAGS temp = *flags;
+
+	    if (temp.lna != pres.flag_att.bitflags.lna) {
+		    cpld_write(MSHU_ID, (uint8_t)(temp.lna));		    
+	    }
+	    
+	    if (temp.preslna != pres.flag_att.bitflags.preslna) {
+		    cpld_write(MSHUPRES_ID, (uint8_t)(temp.preslna));
+	    }
+	    
+	    if (temp.on != pres.flag_att.bitflags.on) {
+		    cpld_write(PRES_ONOFF_ID, (uint8_t)(temp.on));		    
+	    }
+	    
+	    if (temp.test != pres.flag_att.bitflags.test) {
+		    cpld_write(RF_TEST_ID, (uint8_t)(temp.test));
+	    }
+	    
+	    pres.flag_att.bitflags = temp;
     }
 
 /*=============================================================================================================*/

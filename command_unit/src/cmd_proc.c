@@ -752,25 +752,31 @@ uint8_t	trans_data_from_string
                 {
                 att_flags_t  att_flags;
                 uint8_t      no_parse = 0;
+	                char		 *str;
                 
                 if ( strstr( string, " lnaoff" ) )
                     {
                     no_parse++;
                     att_flags.bitflags.lna = 0;
                     }
-                else if ( strstr( string, " lnaon" ) )
+                else if ( strstr( string, " lnalow" ) )
                     {
                     no_parse++;
                     att_flags.bitflags.lna = 1;                    
                     }
+                else if ( strstr( string, " lnahigh" ) )
+					{
+	                no_parse++;
+	                att_flags.bitflags.lna = 2;                    
+					}
                 
                 if ( strstr( string, " plnaoff" ) ) {
                     no_parse++;
                     att_flags.bitflags.preslna = 0;
                     }
                 else if ( strstr( string, " plnaon" ) ) {
-                no_parse++;
-                att_flags.bitflags.preslna = 1;                    
+					no_parse++;
+					att_flags.bitflags.preslna = 1;                    
                     }
                 
                 if ( strstr( string, " tstoff" ) ) {
@@ -778,17 +784,17 @@ uint8_t	trans_data_from_string
                     att_flags.bitflags.test = 0;
                     }
                 else if ( strstr( string, " tston" ) ) {
-                no_parse++;
-                att_flags.bitflags.test = 1;                    
+					no_parse++;
+					att_flags.bitflags.test = 1;                    
                     }
 
-                if ( strstr( string, "off " ) ) {
+	            if ((str = strstr(string, "off ")) && (str == string)) {
                     no_parse++;
                     att_flags.bitflags.on = 0;
                     }
-                else if ( strstr( string, "on " ) ) {
-                no_parse++;
-                att_flags.bitflags.on = 1;                    
+				else if ((str = strstr(string, "on ")) && (str == string)) {
+					no_parse++;
+					att_flags.bitflags.on = 1;                    
                     }
                 
                 *end = string + strlen( string );
