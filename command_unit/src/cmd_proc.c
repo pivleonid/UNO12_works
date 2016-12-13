@@ -753,7 +753,7 @@ uint8_t	trans_data_from_string
                 att_flags_t  att_flags;
                 uint8_t      no_parse = 0;
 	                char		 *str;
-                
+	                	                                
                 if ( strstr( string, " lnaoff" ) )
                     {
                     no_parse++;

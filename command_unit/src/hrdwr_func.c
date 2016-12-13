@@ -12,14 +12,6 @@
 #include "device/CPLD.h"
 
 /*defines===========================================================================================================*/
-#define MSHU_ID			(0x01u)
-#define MSHUPRES_ID		(0x02u)
-#define MECHATT_ID		(0x03u)
-#define RF_TEST_ID		(0x04u)
-#define PHILTERES_ID	(0x05u)
-#define DIGATT_ID		(0x06u)
-#define PRES_ONOFF_ID	(0x07u)
-#define L_H_BAND_ID		(0x08u)
 
 
 /*types=============================================================================================================*/
@@ -46,8 +38,8 @@ static struct _HETERODINE
 	uint8_t      dds_gain;
 	uint32_t     dds_freq;	
 } heterodine[2] = {
-	{HETMUL_X2HIGH, 5,  123},
-	{HETMUL_X2LOW,  10, 321},
+	{HETMUL_OFF, 0, 0},
+	{HETMUL_OFF, 0, 0},
 };
 
 static struct _PRESELECTOR
@@ -57,7 +49,7 @@ static struct _PRESELECTOR
 } pres = { 65, { 1, 0, 1, 0 } };
 	
 static uint8_t			yig = 0;
-static cu_type_sts_t	cu_type = CU_TYPE_HETERODIN;
+static cu_type_sts_t	cu_type = CU_TYPE_PRESELECTOR;
 
 /*code==============================================================================================================*/
 
@@ -98,7 +90,12 @@ void set_cu_type(cu_type_sts_t type)
 /*=============================================================================================================*/
 void set_mechatt_gain( uint8_t gain )
     {
-        pres.mech_att_gain = gain;
+	    if (pres.mech_att_gain != gain)
+	    {
+		    /*<0-65 ס ראדמל 5 הב>*/
+		    cpld_write(CPLD_MECHATT_ID, gain / 5);
+		    pres.mech_att_gain = gain;		    
+	    }
     }
 
 /*=============================================================================================================*/
@@ -127,19 +124,19 @@ void set_mechatt_flags( const struct  _ATT_FLAGS *flags )
 	    struct  _ATT_FLAGS temp = *flags;
 
 	    if (temp.lna != pres.flag_att.bitflags.lna) {
-		    cpld_write(MSHU_ID, (uint8_t)(temp.lna));		    
+		    cpld_write(CPLD_MSHU_ID, (uint8_t)(temp.lna));		    
 	    }
 	    
 	    if (temp.preslna != pres.flag_att.bitflags.preslna) {
-		    cpld_write(MSHUPRES_ID, (uint8_t)(temp.preslna));
+		    cpld_write(CPLD_MSHUPRES_ID, (uint8_t)(temp.preslna));
 	    }
 	    
 	    if (temp.on != pres.flag_att.bitflags.on) {
-		    cpld_write(PRES_ONOFF_ID, (uint8_t)(temp.on));		    
+		    cpld_write(CPLD_PRES_ONOFF_ID, (uint8_t)(temp.on));		    
 	    }
 	    
 	    if (temp.test != pres.flag_att.bitflags.test) {
-		    cpld_write(RF_TEST_ID, (uint8_t)(temp.test));
+		    cpld_write(CPLD_RF_TEST_ID, (uint8_t)(temp.test));
 	    }
 	    
 	    pres.flag_att.bitflags = temp;
@@ -326,8 +323,13 @@ void set_het_mul(uint8_t code)
      \sa 
 */
 /*=============================================================================================================*/
-void set_het(int het_index, uint8_t gain, uint32_t freq)
+void set_het(
+	int het_index, 
+	uint8_t gain, 
+	uint32_t freq		/*!< [in] freq = 0 – 130000000 (0 -13 ֳדצ ס ראדמל 0.1 ֳצ) */
+	)
 {	
+	
 	if (uno_write(het_index, ((float) freq)/10, gain) == OK)
 	{
 		heterodine[het_index].dds_gain = gain;	

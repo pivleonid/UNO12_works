@@ -114,7 +114,8 @@ int uno_open(uint8_t uno_index)
 		hspi5.Init.CLKPolarity = SPI_POLARITY_LOW;
 		hspi5.Init.CLKPhase = SPI_PHASE_1EDGE;
 		hspi5.Init.NSS = SPI_NSS_SOFT;
-		hspi5.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+//		hspi5.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+		hspi5.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
 		hspi5.Init.FirstBit = SPI_FIRSTBIT_MSB;
 		hspi5.Init.TIMode = SPI_TIMODE_DISABLE;
 		hspi5.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -155,7 +156,8 @@ int uno_open(uint8_t uno_index)
 		hspi6.Init.CLKPolarity = SPI_POLARITY_LOW;
 		hspi6.Init.CLKPhase = SPI_PHASE_1EDGE;
 		hspi6.Init.NSS = SPI_NSS_SOFT;
-		hspi6.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+//		hspi6.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+		hspi6.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
 		hspi6.Init.FirstBit = SPI_FIRSTBIT_MSB;
 		hspi6.Init.TIMode = SPI_TIMODE_DISABLE;
 		hspi6.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
