@@ -1090,14 +1090,6 @@
 
 // --- Include directories begin --- //
 //.
-//$(ProjectDir)/BSP/STM32_USB_Device_Library/Core/Inc
-//$(ProjectDir)/BSP/STM32_USB_Device_Library/Class/CDC/Inc
-//$(ProjectDir)/BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc
-//$(ProjectDir)/BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy
-//$(ProjectDir)/BSP/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include
-//$(ProjectDir)/BSP/STM32F4xxxx/CMSIS_HAL/Include
-//$(ProjectDir)/BSP/STM32F4xxxx/CMSIS_HAL/RTOS/Template
-//$(ProjectDir)/src
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/5.3.0/../../../../arm-eabi/include/c++/5.3.0
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/5.3.0/../../../../arm-eabi/include/c++/5.3.0/arm-eabi/thumb/fpu/cortex_m4
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/5.3.0/../../../../arm-eabi/include/c++/5.3.0/backward
@@ -1105,6 +1097,16 @@
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/5.3.0/include-fixed
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/5.3.0/../../../../arm-eabi/sys-include
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/5.3.0/../../../../arm-eabi/include
+//./BSP
+//./BSP/STM32_USB_Device_Library/Core/Inc
+//./BSP/STM32_USB_Device_Library/Class/CDC/Inc
+//./BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc
+//./BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy
+//./BSP/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include
+//./BSP/STM32F4xxxx/CMSIS_HAL/Include
+//./BSP/STM32F4xxxx/CMSIS_HAL/RTOS/Template
+//./src
+//./src/usb
 // --- Include directories end --- //
 
 

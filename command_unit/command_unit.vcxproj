@@ -35,7 +35,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>.;BSP\STM32_USB_Device_Library\Core\Inc;BSP\STM32_USB_Device_Library\Class\CDC\Inc;BSP\STM32F4xxxx\STM32F4xx_HAL_Driver\Inc;BSP\STM32F4xxxx\STM32F4xx_HAL_Driver\Inc\Legacy;BSP\STM32F4xxxx\CMSIS_HAL\Device\ST\STM32F4xx\Include;BSP\STM32F4xxxx\CMSIS_HAL\Include;BSP\STM32F4xxxx\CMSIS_HAL\RTOS\Template;src;c:\sysgcc\arm-eabi\arm-eabi\include\c++\5.3.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\5.3.0\arm-eabi\thumb\fpu\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\5.3.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\5.3.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\5.3.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>.;c:\sysgcc\arm-eabi\arm-eabi\include\c++\5.3.0;c:\sysgcc\arm-eabi\arm-eabi\include\c++\5.3.0\arm-eabi\thumb\fpu\cortex_m4;c:\sysgcc\arm-eabi\arm-eabi\include\c++\5.3.0\backward;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\5.3.0\include;c:\sysgcc\arm-eabi\lib\gcc\arm-eabi\5.3.0\include-fixed;c:\sysgcc\arm-eabi\arm-eabi\sys-include;c:\sysgcc\arm-eabi\arm-eabi\include;./BSP;./BSP/STM32_USB_Device_Library/Core/Inc;./BSP/STM32_USB_Device_Library/Class/CDC/Inc;./BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc;./BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy;./BSP/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include;./BSP/STM32F4xxxx/CMSIS_HAL/Include;./BSP/STM32F4xxxx/CMSIS_HAL/RTOS/Template;./src;./src/usb;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;BSP\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
@@ -132,8 +132,8 @@
     <ClCompile Include="BSP\STM32_USB_Device_Library\Core\Src\usbd_core.c" />
     <ClCompile Include="BSP\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c" />
     <ClCompile Include="BSP\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c" />
-    <ClCompile Include="command_unit.c" />
     <ClCompile Include="src\cmd_proc.c" />
+    <ClCompile Include="src\command_unit.c" />
     <ClCompile Include="src\device\ad9116.c" />
     <ClCompile Include="src\device\CPLD.c" />
     <ClCompile Include="src\device\dac.c" />
@@ -142,15 +142,15 @@
     <ClCompile Include="src\device\stm32f4xx_gpio_brd.c" />
     <ClCompile Include="src\device\stm32f4xx_pwmdac_brd.c" />
     <ClCompile Include="src\device\stm32f4xx_spidac_brd.c" />
+    <ClCompile Include="src\device\system_stm32f4xx.c" />
     <ClCompile Include="src\fsm_protocol_cdc.c" />
     <ClCompile Include="src\hrdwr_func.c" />
     <ClCompile Include="src\inttask_messages.c" />
     <ClCompile Include="src\mdlwr\common_lib\circ_buffer.c" />
     <ClCompile Include="src\protocol_data.c" />
-    <ClCompile Include="system_stm32f4xx.c" />
-    <ClCompile Include="usbd_cdc_if.c" />
-    <ClCompile Include="usbd_conf.c" />
-    <ClCompile Include="usbd_desc.c" />
+    <ClCompile Include="src\usb\usbd_cdc_if.c" />
+    <ClCompile Include="src\usb\usbd_conf.c" />
+    <ClCompile Include="src\usb\usbd_desc.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BSP\STM32F4xxxx\CMSIS_HAL\Device\ST\STM32F4xx\Include\stm32f4xx.h" />
@@ -263,10 +263,10 @@
     <ClInclude Include="src\mdlwr\fsm\pt\lc.h" />
     <ClInclude Include="src\mdlwr\fsm\pt\pt-sem.h" />
     <ClInclude Include="src\mdlwr\fsm\pt\pt.h" />
+    <ClInclude Include="src\usb\usbd_cdc_if.h" />
+    <ClInclude Include="src\usb\usbd_conf.h" />
+    <ClInclude Include="src\usb\usbd_desc.h" />
     <ClInclude Include="stm32f4xx_hal_conf.h" />
-    <ClInclude Include="usbd_cdc_if.h" />
-    <ClInclude Include="usbd_conf.h" />
-    <ClInclude Include="usbd_desc.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="debug.mak" />

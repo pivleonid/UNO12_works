@@ -17,7 +17,7 @@ OBJCOPY := $(TOOLCHAIN_ROOT)/bin/arm-eabi-objcopy.exe
 
 #Additional flags
 PREPROCESSOR_MACROS += ARM_MATH_CM4 STM32F427ZG USE_USB_FS stm32_flash_layout STM32F427xx
-INCLUDE_DIRS += . $(BSP_ROOT)/STM32_USB_Device_Library/Core/Inc $(BSP_ROOT)/STM32_USB_Device_Library/Class/CDC/Inc $(BSP_ROOT)/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc $(BSP_ROOT)/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy $(BSP_ROOT)/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include $(BSP_ROOT)/STM32F4xxxx/CMSIS_HAL/Include $(BSP_ROOT)/STM32F4xxxx/CMSIS_HAL/RTOS/Template D:/work/prj/gamma/phase_b/command_unit/command_unit/src
+INCLUDE_DIRS += . ./BSP ./BSP/STM32_USB_Device_Library/Core/Inc ./BSP/STM32_USB_Device_Library/Class/CDC/Inc ./BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc ./BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy ./BSP/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include ./BSP/STM32F4xxxx/CMSIS_HAL/Include ./BSP/STM32F4xxxx/CMSIS_HAL/RTOS/Template ./src ./src/usb
 LIBRARY_DIRS += 
 LIBRARY_NAMES += compactcpp
 ADDITIONAL_LINKER_INPUTS += 
@@ -29,5 +29,5 @@ CXXFLAGS +=
 ASFLAGS += -mfpu=fpv4-sp-d16
 LDFLAGS += 
 COMMONFLAGS += -mcpu=cortex-m4 -mthumb -mfloat-abi=hard
-LINKER_SCRIPT := D:/work/prj/gamma/phase_b/command_unit/command_unit/BSP/STM32F427ZG_flash.lds
+LINKER_SCRIPT := ./BSP/STM32F427ZG_flash.lds
 

@@ -51,20 +51,14 @@
       <UniqueIdentifier>{f50f9c8d-ecdf-4696-bb83-74e828a1886a}</UniqueIdentifier>
       <Extensions>*.vgdbsettings</Extensions>
     </Filter>
+    <Filter Include="Source files\usb">
+      <UniqueIdentifier>{dbb6fe3e-9220-4ce4-b1eb-d78a193d92e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\usb">
+      <UniqueIdentifier>{7a93f818-c963-482c-95d2-7ad9dc00e5fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="usbd_cdc_if.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="usbd_conf.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="usbd_desc.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="system_stm32f4xx.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="BSP\STM32F4xxxx\StartupFiles\startup_stm32f427xx.c">
       <Filter>Source files\Device-specific files</Filter>
     </ClCompile>
@@ -278,9 +272,6 @@
     <ClCompile Include="BSP\STM32F4xxxx\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.c">
       <Filter>Source files\Device-specific files</Filter>
     </ClCompile>
-    <ClCompile Include="command_unit.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="src\mdlwr\common_lib\circ_buffer.c">
       <Filter>Source files\mdlwr\common</Filter>
     </ClCompile>
@@ -323,17 +314,23 @@
     <ClCompile Include="src\device\CPLD.c">
       <Filter>Source files\board specific files</Filter>
     </ClCompile>
+    <ClCompile Include="src\usb\usbd_cdc_if.c">
+      <Filter>Source files\usb</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usb\usbd_conf.c">
+      <Filter>Source files\usb</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usb\usbd_desc.c">
+      <Filter>Source files\usb</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command_unit.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\device\system_stm32f4xx.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="usbd_cdc_if.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="usbd_conf.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="usbd_desc.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="stm32f4xx_hal_conf.h">
       <Filter>Header files</Filter>
     </ClInclude>
@@ -666,6 +663,15 @@
     </ClInclude>
     <ClInclude Include="src\device\CPLD.h">
       <Filter>Header files\board specific files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\usb\usbd_cdc_if.h">
+      <Filter>Header files\usb</Filter>
+    </ClInclude>
+    <ClInclude Include="src\usb\usbd_conf.h">
+      <Filter>Header files\usb</Filter>
+    </ClInclude>
+    <ClInclude Include="src\usb\usbd_desc.h">
+      <Filter>Header files\usb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

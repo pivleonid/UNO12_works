@@ -46,6 +46,13 @@ static err_code_t  get_uno      ( void*, void* );
                 
 static err_code_t  echo_set     ( void*, void* ); 
 
+static err_code_t  set_data(void*, void*); 
+static err_code_t  get_data_size(void*, void*); 
+static err_code_t  get_data_names(void*, void*); 
+static err_code_t  get_data_names_mask(void*, void*); 
+static err_code_t  get_data(void*, void*); 
+
+
 cmd_errcode_t _message_reaction( cmd_code_t	cmdcode, err_code_t *opcode, void* data, void* answ_data, uint32_t* index );
 cmd_errcode_t _answer_send( adress_code_t   source_addr, err_code_t opcode, void* data_out, uint32_t index );
 
@@ -85,7 +92,14 @@ const struct _CMD_TABLE
                 
     {   CDMCODE_GET_STATUS,     "geta",		0,  get_cu_sts  },
     {   CMDCODE_FREQ,           "freq",     1,  set_freq    },
-    {   0xFE,                   "echo",     1,  echo_set    },        
+    {   0xFE,                   "echo",     1,  echo_set    },
+	    
+	{	CMDCODE_SETDATA,		"setdata",			1,	set_data},
+	{   CMDCODE_GETDATASIZES,	"getdatasize",		0,  get_data_size},
+	{   CMDCODE_GETDATANAMES,	"getdatanames",		1,  get_data_names},
+	{	CMDCODE_GETDATANAMESM,	"getdatanamesmask",	2,  get_data_names_mask},
+	{	CMDCODE_GETDATA,		"getdata",			1,  get_data},
+    	    
     { 0, "\0", 0, NULL },
     };
 
@@ -328,7 +342,7 @@ static err_code_t  set_dds( void* in_data, void* answ_data )
     {
         uint32_t    freq;
     
-        memcpy( &freq, ((uint8_t*)in_data)[1], 4 );
+        memcpy( &freq, &((uint8_t*)in_data)[1], 4 );
         set_dds_code(((uint8_t*)in_data)[0], freq, ((uint8_t*)in_data)[5]);
         
         return _RESULT_OK;        
@@ -913,4 +927,67 @@ uint8_t	trans_data_from_string
     }
 
 
+/*=============================================================================================================*/
+/*! \brief   функция обратного вызова 
+
+    \return признак завершения команды
+    \retval _RESULT_OK, _RESULT_BADVALUE
+*/
+/*=============================================================================================================*/
+static err_code_t  set_data(void* in_data, void* answ_data)
+{
+	return _RESULT_OK;        	
+}
+
+
+/*=============================================================================================================*/
+/*! \brief   функция обратного вызова 
+
+    \return признак завершения команды
+    \retval _RESULT_OK, _RESULT_BADVALUE
+*/
+/*=============================================================================================================*/
+static err_code_t  get_data_size(void* in_data, void* answ_data)
+{
+	return _RESULT_OK;        	
+} 
+
+
+/*=============================================================================================================*/
+/*! \brief   функция обратного вызова 
+
+    \return признак завершения команды
+    \retval _RESULT_OK, _RESULT_BADVALUE
+*/
+/*=============================================================================================================*/
+static err_code_t  get_data_names(void* in_data, void* answ_data)
+{
+	return _RESULT_OK;        	
+}
+
+
+/*=============================================================================================================*/
+/*! \brief   функция обратного вызова 
+
+    \return признак завершения команды
+    \retval _RESULT_OK, _RESULT_BADVALUE
+*/
+/*=============================================================================================================*/
+static err_code_t  get_data_names_mask(void* in_data, void* answ_data)
+{
+	return _RESULT_OK;        	
+}
+
+
+/*=============================================================================================================*/
+/*! \brief   функция обратного вызова 
+
+    \return признак завершения команды
+    \retval _RESULT_OK, _RESULT_BADVALUE
+*/
+/*=============================================================================================================*/
+static err_code_t  get_data(void* in_data, void* answ_data)
+{
+	return _RESULT_OK;        	
+}
 

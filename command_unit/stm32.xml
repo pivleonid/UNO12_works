@@ -23,14 +23,16 @@
       </PreprocessorMacros>
       <IncludeDirectories>
         <string>.</string>
-        <string>$$SYS:BSP_ROOT$$/STM32_USB_Device_Library/Core/Inc</string>
-        <string>$$SYS:BSP_ROOT$$/STM32_USB_Device_Library/Class/CDC/Inc</string>
-        <string>$$SYS:BSP_ROOT$$/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc</string>
-        <string>$$SYS:BSP_ROOT$$/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy</string>
-        <string>$$SYS:BSP_ROOT$$/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include</string>
-        <string>$$SYS:BSP_ROOT$$/STM32F4xxxx/CMSIS_HAL/Include</string>
-        <string>$$SYS:BSP_ROOT$$/STM32F4xxxx/CMSIS_HAL/RTOS/Template</string>
-        <string>D:/work/prj/gamma/phase_b/command_unit/command_unit/src</string>
+        <string>./BSP</string>
+        <string>./BSP/STM32_USB_Device_Library/Core/Inc</string>
+        <string>./BSP/STM32_USB_Device_Library/Class/CDC/Inc</string>
+        <string>./BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc</string>
+        <string>./BSP/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy</string>
+        <string>./BSP/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include</string>
+        <string>./BSP/STM32F4xxxx/CMSIS_HAL/Include</string>
+        <string>./BSP/STM32F4xxxx/CMSIS_HAL/RTOS/Template</string>
+        <string>./src</string>
+        <string>./src/usb</string>
       </IncludeDirectories>
       <AdditionalLibraries>
         <string>compactcpp</string>
@@ -39,7 +41,7 @@
       <CXXFLAGS />
       <LDFLAGS />
       <ASFLAGS>-mfpu=fpv4-sp-d16</ASFLAGS>
-      <LinkerScript>D:/work/prj/gamma/phase_b/command_unit/command_unit/BSP/STM32F427ZG_flash.lds</LinkerScript>
+      <LinkerScript>./BSP/STM32F427ZG_flash.lds</LinkerScript>
       <COMMONFLAGS>-mcpu=cortex-m4 -mthumb -mfloat-abi=hard</COMMONFLAGS>
       <EnableLinkerGroups>true</EnableLinkerGroups>
     </CompilationFlags>

@@ -45,6 +45,13 @@ typedef enum CMD_CODE
 /* heterodin */    
         CMDCODE_UNO             = (0x4Du),
         CMDCODE_GETUNO          = (0x7Du),
+
+/* calib */	    
+        CMDCODE_SETDATA			= (0xA0u),
+        CMDCODE_GETDATASIZES    = (0xA1u),
+        CMDCODE_GETDATANAMES	= (0xA2u),
+        CMDCODE_GETDATANAMESM	= (0xA3u),	    
+        CMDCODE_GETDATA 		= (0xA4u),	    
     } cmd_code_t;
 
     

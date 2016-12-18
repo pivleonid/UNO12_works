@@ -177,9 +177,6 @@ int main(void)
         WORK_OUT_FSM_TABLE( enum CDCRECV_STATE, get_curst_cdc, get_cursig_cdc, cdc_recv_table )
         WORK_OUT_FSM_TABLE( enum CDCSEND_STATE, get_curst_sendcdc, get_cursig_sendcdc, cdc_send_table )
 
-    //	WORK_OUT_FSM_TABLE( enum CDCRECV_STATE, get_curst_uart, get_cursig_uart, uart_recv_table )
-    //	WORK_OUT_FSM_TABLE( enum CDCSEND_STATE, get_curst_senduart, get_cursig_senduart, uart_send_table )
-    //    	
     	PT_SCHEDULE( pt_cmd_proc( &cmd_pt ) );	
     }
 
