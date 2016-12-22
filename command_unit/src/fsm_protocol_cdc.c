@@ -109,7 +109,7 @@ static uint32_t             parse_index = 0;
 static char*				brk_sym = NULL; 
 
 static uint8_t			    output_cdcbuffer[CDC_OUTPUT_BUFSIZE];
-static uint8_t              echo_need = 1;
+static uint8_t              echo_need = 0; //1
 
 static uint8_t				code_in;
 static uint8_t              *answ_data;

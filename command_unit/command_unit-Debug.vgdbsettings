@@ -70,7 +70,7 @@
       <Entries>
         <KeyValue>
           <Key>com.sysprogs.jlink.root</Key>
-          <Value>C:\Program Files (x86)\SEGGER\JLink_V498b</Value>
+          <Value>C:\Program Files (x86)\SEGGER\JLink_V610i</Value>
         </KeyValue>
         <KeyValue>
           <Key>com.sysprogs.jlink.connection</Key>
@@ -108,6 +108,22 @@
           <Key>com.sysprogs.jlink.autoprogram</Key>
           <Value />
         </KeyValue>
+        <KeyValue>
+          <Key>SYS:DESIGN_MODE</Key>
+          <Value>1</Value>
+        </KeyValue>
+        <KeyValue>
+          <Key>com.sysprogs.jlink.commands.beforeconnect</Key>
+          <Value />
+        </KeyValue>
+        <KeyValue>
+          <Key>com.sysprogs.jlink.commands.beforeload</Key>
+          <Value />
+        </KeyValue>
+        <KeyValue>
+          <Key>com.sysprogs.jlink.commands.afterload</Key>
+          <Value />
+        </KeyValue>
       </Entries>
     </DebugMethodProperties>
     <SemihostingSupport>Auto</SemihostingSupport>
@@ -135,7 +151,7 @@
   <UserDefinedVariables />
   <ImportedPropertySheets />
   <CodeSense>
-    <Enabled>Unknown</Enabled>
+    <Enabled>False</Enabled>
     <CFLAGS />
     <CXXFLAGS />
     <ExternalSourceFileList />

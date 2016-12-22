@@ -494,10 +494,10 @@ static err_code_t  set_uno( void* in_data, void* answ_data )
       [2-5]
       */
 	uint8_t  index = ((uint8_t*)in_data)[0] >> 7;
-	uint32_t tempfreq;
+	uint64_t tempfreq;
 	    
 	set_het_mul(((uint8_t*)in_data)[0] & 0x3);
-    memcpy( &tempfreq, &((uint8_t*)in_data)[2], 4 );	    
+    memcpy( &tempfreq, &((uint8_t*)in_data)[2], 8 );	    
 	set_het(index, ((uint8_t*)in_data)[1], tempfreq );	    
 	    
     return _RESULT_OK;        
@@ -841,7 +841,7 @@ uint8_t	trans_data_from_string
 	            uint8_t			hetnum;
 	            het_flags_t     het_flags;
 	            uint16_t        gain;
-	            uint32_t        freq;	            
+	            uint64_t        freq;	            
 	            uint8_t			no_parse = 0;
 	            
 	            /* номер гетеродина и умножитель */
@@ -892,20 +892,21 @@ uint8_t	trans_data_from_string
 	            }	            
                 
 	            /* частота */
-	            freq = strtol(*end, end, 10);
-	            no_parse++;
+	            //freq = strtol(*end, end, 10);
+				freq = atoll(*end);
+				no_parse++;
 	            if (*end == NULL) {
 		            return ERROR;                    
 	            }
                	            
 	            ((uint8_t*)output_buf)[1] = (uint8_t)(gain / 5);
-	            memcpy(&((uint8_t*)output_buf)[2], &freq, 4);
+	            memcpy(&((uint8_t*)output_buf)[2], &freq, 8);
 	            if (no_parse < 4)  {
 		            return ERROR;                        
 	            }	            
 	            
 	            if (outlen != NULL) {
-		            *outlen = 6;
+		            *outlen = 10;
 	            }                
 	            
             }

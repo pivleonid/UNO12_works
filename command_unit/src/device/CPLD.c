@@ -1,11 +1,15 @@
+/*!  \file 	CPLD.c
+*   \brief  файл функций настройки работы платы преселектора и гетеродина
+*/
+
+/*includes==========================================================================================================*/
 #include "CPLD.h"
 #include <stm32f4xx_hal.h>
-
+/*defines===========================================================================================================*/
 #define ADDR1 GPIO_PIN_15
 #define ADDR0 GPIO_PIN_14
 #define ADDR2 GPIO_PIN_13
 #define STROB GPIO_PIN_12
-	 //--//
 #define data0 GPIO_PIN_0
 #define data1 GPIO_PIN_1
 #define data2 GPIO_PIN_2
@@ -14,13 +18,7 @@
 #define data5 GPIO_PIN_5
 #define data6 GPIO_PIN_6
 #define data7 GPIO_PIN_7
-
-static void set_3_byte(uint8_t data_byte1, uint8_t data_byte2, uint8_t data_byte3, uint8_t CPLD);
-static void set_byte(uint8_t data_byte, uint8_t addr_CPLD);
-static void set_output_cpld(void);
-
-static uint8_t func_0x06(uint8_t AT_ID);
-//------------------------------------------------------------//
+/*types=============================================================================================================*/
 typedef struct CPLD_out
 {
 	uint8_t data_CPLD_0_0;
@@ -29,29 +27,29 @@ typedef struct CPLD_out
 	uint8_t data_CPLD_1_0;
 	uint8_t data_CPLD_1_1;
 	uint8_t data_CPLD_1_2;
-} CPLD_out; //сразу экземпл€р структуры
-//------------------------------------------------------------//
-enum AT_ID 
+} CPLD_out_t;
+/*------------------------------------------------------------*/
+enum AT_ID
 {
-	LNA                    = 1,  //low noise amplifier -> малошум€щий усилитель
+	LNA = 1,  /*low noise amplifier -> малошум€щий усилитель*/
 	LNA_1_GHz_preselector,
 	Attenuator_0_65_dB,
 	RF_TEST,
 	state_preselector_0x05,
-	//6  состо€ние описано далее в функции
-	Preseloctor_ON_OFF     = 7,
+	/*6  состо€ние описано далее в функции*/
+	Preseloctor_ON_OFF = 7,
 	HighBand_LowBand,
-	Ymnog_UNO1             = 0x34, //52
+	Ymnog_UNO1 = 0x34, /*—осто€ни€ гетеродина*/
 };
-//------------------------------------------------------------//
-const  CPLD_out   state_preselector[53][14] = {
+/*------------------------------------------------------------*/
+const  CPLD_out_t   state_preselector[53][14] = {
 	[LNA][0] = { 0, 0, 0, 0, 0, 0 },
 	[LNA][1] = { 0, 0, 0, 0, 0b00010000, 0 },
 	[LNA][2] = { 0, 0, 0, 0, 0b00011000, 0 },
 
 	[LNA_1_GHz_preselector][0] = { 0, 0, 0, 0, 0, 0 },
 	[LNA_1_GHz_preselector][1] = { 0, 0, 0, 0, 0b00100000, 0 },
-    
+
 	[Attenuator_0_65_dB][0] = { 0, 0, 0, 0, 0, 0 },
 	[Attenuator_0_65_dB][1] = { 0, 0, 0, 0b00000001, 0, 0 },
 	[Attenuator_0_65_dB][2] = { 0, 0, 0, 0b00000010, 0, 0 },
@@ -69,7 +67,7 @@ const  CPLD_out   state_preselector[53][14] = {
 
 	[RF_TEST][0] = { 0, 0, 0, 0, 0, 0 },
 	[RF_TEST][1] = { 0, 0, 0, 0, 0b00000010, 0 },
-	
+
 	[state_preselector_0x05][0] = { 0b10010010, 0, 0, 0, 0, 0 },
 	[state_preselector_0x05][1] = { 0b10110010, 0, 0, 0, 0, 0 },
 	[state_preselector_0x05][2] = { 0b10101010, 0, 0, 0, 0, 0 },
@@ -86,26 +84,39 @@ const  CPLD_out   state_preselector[53][14] = {
 	[state_preselector_0x05][13] = { 0, 0, 0b00000001, 0, 0, 0 },
 
 	[Preseloctor_ON_OFF][0] = { 0, 0, 0, 0, 0, 0 },
-	[Preseloctor_ON_OFF][1] = { 0, 0, 0, 0, 0, 0b01000000 },
+	[Preseloctor_ON_OFF][1] = { 0, 0, 0, 0, 0b01000000, 0 },
 
 	[HighBand_LowBand][0] = { 0, 0, 0, 0, 0, 0 },
-	[HighBand_LowBand][1] = { 0, 0, 0, 0, 0, 0b10000000 },
+	[HighBand_LowBand][1] = { 0, 0, 0, 0, 0b10000000, 0 },
 
 	[Ymnog_UNO1][0] = { 0b11001001, 0, 0, 0, 0, 0 },
 	[Ymnog_UNO1][1] = { 0b11100010, 0, 0, 0, 0, 0 },
 	[Ymnog_UNO1][2] = { 0b10100100, 1, 0, 0, 0, 0 },
 	[Ymnog_UNO1][3] = { 0b10111011, 1, 0, 0, 0, 0 },
+
 };
-//------------------------------------------------------------//
+/*prototypes========================================================================================================*/
+static void set_3_byte(uint8_t data_byte1, uint8_t data_byte2, uint8_t data_byte3, uint8_t CPLD);
+static void set_byte(uint8_t data_byte, uint8_t addr_CPLD);
+static void set_output_cpld(void);
+static uint8_t func_0x06(uint8_t AT_ID);
+/*code==============================================================================================================*/
 
-
+/*=============================================================================================================*/
+/*!  \brief
+ћен€ем биты местами
+\return uint8_t
+\retval
+\sa
+*/
+/*=============================================================================================================*/
 //------------------- ќбработка 0x06 --------------------------//
 // D0 1 байт (кроме 0 бита), впринципе перевод работает так, что
 // срать конем на этот бит
 static uint8_t func_0x06(uint8_t number)
 {
-	uint16_t code_out = 0; 
-	code_out  = (number & 0x01) << 15;
+	uint16_t code_out = 0;
+	code_out = (number & 0x01) << 15;
 	code_out |= (number & 0x02) << 13;
 	code_out |= (number & 0x04) << 11;
 	code_out |= (number & 0x8) << 9;
@@ -119,21 +130,27 @@ static uint8_t func_0x06(uint8_t number)
 }
 
 
-//------------------------------------------------------------//
+/*=============================================================================================================*/
+/*!  \brief
+”становка значений на CPLD
+\return void
+\retval
+\sa
+*/
+/*=============================================================================================================*/
 void cpld_write(uint8_t AT_ID, uint8_t number)
 {
-	if (AT_ID == 0x06) set_3_byte(0, func_0x06(number), 0, 0);//CPLD_0 1 байт
-	//обработка CPLD гетеродина
-	if (AT_ID == 0x34) set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0); 
-	
+	if (AT_ID == 0x06) set_3_byte(0, func_0x06(number), 0, 0);
+	if (AT_ID == 0x34) set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0);
+
 	else
 	{
-		set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0);	
+		set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0);
 		set_3_byte(state_preselector[AT_ID][number].data_CPLD_1_0, state_preselector[AT_ID][number].data_CPLD_1_1, state_preselector[AT_ID][number].data_CPLD_1_2, 1);
 	}
-		
+
 }
-//------------------------------------------------------------//
+/*------------------------------------------------------------*/
 static void set_3_byte(uint8_t data_byte1, uint8_t data_byte2, uint8_t data_byte3, uint8_t CPLD)
 {
 	if (CPLD == 0)
@@ -152,29 +169,30 @@ static void set_3_byte(uint8_t data_byte1, uint8_t data_byte2, uint8_t data_byte
 
 	//return ERR!
 }
-//------------------------------------------------------------//
-	/*
-	 јдреса дл€ записи:
-			 PIN_13	  PIN_15 PIN_14
-			 RD        CS1    CS0
+/*------------------------------------------------------------*/
+/*
+јдреса дл€ записи:
+PIN_13	  PIN_15 PIN_14
+RD        CS1    CS0
 adder_CPLD	 ADR2   ADR1    ADR0
 (0)			 0    0    0 - не используетс€
-  
+
 (1)			 0    0    1 - нулевой байт первой CPLD
 (2)			 0    1    0 - первый  байт первой CPLD
 (3)			 0    1    1 - второй  байт первой CPLD
-  
+
 (4)			 1    0    0 - нулевой байт второй CPLD
 (5)			 1    0    1 - первый  байт второй CPLD
 (6)			 1    1    0 - второй  байт второй CPLD
-  
+
 (7)			 1    1    1 - прокидка состо€ний внутреннего регистра на выход дл€ обоих CPLD
-	*/
+*/
 //data byte - данные одного байта! addr_CPLD -> перва€ CPLD 1,2,3 втора€ -> 4,5,6 
+/*------------------------------------------------------------*/
 static void set_byte(uint8_t data_byte, uint8_t addr_CPLD)
 {
-	HAL_GPIO_WritePin(GPIOD, data0 | data1 | data2 | data3 | data5 | data4 | data6 | data7 |  ADDR0 | ADDR1 | ADDR2 | STROB, GPIO_PIN_RESET);
-	HAL_Delay(5);
+	HAL_GPIO_WritePin(GPIOD, data0 | data1 | data2 | data3 | data5 | data4 | data6 | data7 | ADDR0 | ADDR1 | ADDR2 | STROB, GPIO_PIN_RESET);
+	//HAL_Delay(5);
 	uint8_t numb_0 = data_byte & 0x01;
 	uint8_t numb_1 = data_byte & 0x02;
 	uint8_t numb_2 = data_byte & 0x04;
@@ -186,89 +204,83 @@ static void set_byte(uint8_t data_byte, uint8_t addr_CPLD)
 	/*
 	јлгоритм работы тернарной условной операции ?: следующий:
 	(логическое выражение ? выражение 1 : выражение 2)
-    1. ¬ычисл€етс€ логическое выражение.
-    2. ≈сли логическое выражение истинно, то вычисл€етс€ значение выражени€ выражение 1, в противном случае (0) Ч значение выражени€ выражение 2.
-    3. ¬ычисленное значение возвращаетс€.
+	1. ¬ычисл€етс€ логическое выражение.
+	2. ≈сли логическое выражение истинно, то вычисл€етс€ значение выражени€ выражение 1, в противном случае (0) Ч значение выражени€ выражение 2.
+	3. ¬ычисленное значение возвращаетс€.
 	*/
 	HAL_GPIO_WritePin(GPIOD,
-		(numb_0 ? data0 : 0) | 
-		(numb_1 ? data1 : 0) | 
-		(numb_2 ? data2 : 0) | 
-		(numb_3 ? data3 : 0) | 
-		(numb_4 ? data4 : 0) | 
-		(numb_5 ? data5 : 0) | 
-		(numb_6 ? data6 : 0) | 
+		(numb_0 ? data0 : 0) |
+		(numb_1 ? data1 : 0) |
+		(numb_2 ? data2 : 0) |
+		(numb_3 ? data3 : 0) |
+		(numb_4 ? data4 : 0) |
+		(numb_5 ? data5 : 0) |
+		(numb_6 ? data6 : 0) |
 		(numb_7 ? data7 : 0),
 		GPIO_PIN_SET);
 	uint8_t addr_0 = addr_CPLD & 0x01;
 	uint8_t addr_1 = addr_CPLD & 0x02;
 	uint8_t addr_2 = addr_CPLD & 0x04;
 	HAL_GPIO_WritePin(GPIOD,
-		((addr_0 ? ADDR0 : 0) | 
-		(addr_1 ? ADDR1 : 0) | 
-		(addr_2 ? ADDR2 : 0)),
-		GPIO_PIN_SET);	
-
-	HAL_Delay(5);
-	//дергае строб\\
-	
+		((addr_0 ? ADDR0 : 0) |
+		(addr_1 ? ADDR1 : 0) |
+			(addr_2 ? ADDR2 : 0)),
+		GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOD, STROB, GPIO_PIN_SET);
-	
-	HAL_Delay(5);
-
 	HAL_GPIO_WritePin(GPIOD, STROB, GPIO_PIN_RESET);
-
-	HAL_Delay(5);
-	//добавка
-	//HAL_GPIO_WritePin(GPIOD, data0 | data1 | data2 | data3 | data5 | data4 | data6 | data7 |  ADDR0 | ADDR1 | ADDR2 | STROB, GPIO_PIN_RESET);
-	//HAL_Delay(5);
 }
-//------------------------------------------------------------//
+/*------------------------------------------------------------*/
 static void set_output_cpld(void)
 {
-	HAL_GPIO_WritePin(GPIOD, data0 | data1 | data2 | data3 | data5 | data4 | data6 | data7 |  ADDR0 | ADDR1 | ADDR2 | STROB, GPIO_PIN_RESET);
-	HAL_Delay(5);
+	HAL_GPIO_WritePin(GPIOD, data0 | data1 | data2 | data3 | data5 | data4 | data6 | data7 | ADDR0 | ADDR1 | ADDR2 | STROB, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOD, ADDR0 | ADDR1 | ADDR2, GPIO_PIN_SET);
-	HAL_Delay(5);
 	HAL_GPIO_WritePin(GPIOD, ADDR0 | ADDR1 | ADDR2, GPIO_PIN_RESET);
-	HAL_Delay(5);
 }
 
-//------------------------------------------------------------//
+/*=============================================================================================================*/
+/*!  \brief
+включение пинов дл€ работы с CPLD
+\return void
+\retval
+\sa
+*/
+/*=============================================================================================================*/
 void cpld_open(void)
 {
-	//инициализаци€ портов CPLD
-	//OK Error
 	GPIO_InitTypeDef GPIO_InitStruct;
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 	HAL_GPIO_WritePin(GPIOD,
-		GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
-	                     |GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
-	                     |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7,
+		GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15
+		| GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3
+		| GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7,
 		GPIO_PIN_RESET);
-	GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15 
-					| GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 
-					| GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+	GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15
+		| GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3
+		| GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 }
-//------------------------------------------------------------//
+/*=============================================================================================================*/
+/*!  \brief
+¬ыключение пинов дл€ работы с CPLD
+\return void
+\retval
+\sa
+*/
 void cpld_close(void)
 {
 	//выключение портов
 	GPIO_InitTypeDef GPIO_InitStruct;
-	GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15 
-                          | GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 
-                          | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;   
+	GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15
+		| GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3
+		| GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 }
-//------------------------------------------------------------//	 
-
-//------------------------------------------------------------//
+/*------------------------------------------------------------*/
 #undef ADDR1
 #undef ADDR0 
 #undef ADDR2 

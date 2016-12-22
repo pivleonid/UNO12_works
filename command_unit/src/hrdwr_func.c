@@ -36,7 +36,7 @@ static struct _HETERODINE
 {
 	het_flags_t	 multipler;		
 	uint8_t      dds_gain;
-	uint32_t     dds_freq;	
+	uint64_t     dds_freq;	
 } heterodine[2] = {
 	{HETMUL_OFF, 0, 0},
 	{HETMUL_OFF, 0, 0},
@@ -49,7 +49,7 @@ static struct _PRESELECTOR
 } pres = { 65, { 1, 0, 1, 0 } };
 	
 static uint8_t			yig = 0;
-static cu_type_sts_t	cu_type = CU_TYPE_HETERODIN;
+static cu_type_sts_t	cu_type = CU_TYPE_PRESELECTOR;
 
 /*code==============================================================================================================*/
 
@@ -326,11 +326,11 @@ void set_het_mul(uint8_t code)
 void set_het(
 	int het_index, 
 	uint8_t gain, 
-	uint32_t freq		/*!< [in] freq = 0 – 130000000 (0 -13 ֳדצ ס ראדמל 0.1 ֳצ) */
+	uint64_t freq		/*!< [in] freq = 0 – 130000000 (0 -13 ֳדצ ס ראדמל 0.1 ֳצ) */
 	)
 {	
 	
-	if (uno_write(het_index, ((float) freq)/10, gain) == OK)
+	if (uno_write(het_index, ((float) freq)/10000000.0, gain) == OK)
 	{
 		heterodine[het_index].dds_gain = gain;	
 		heterodine[het_index].dds_freq = gain;			

@@ -150,7 +150,9 @@ void periph_open(void)
 	/* TODO если нет типа блока, нужно прописать его отдельной командой с терминала */
 	;
 	if (get_cu_type() == CU_TYPE_HETERODIN){
+
 		(void)uno_open(0);
+
 		(void)uno_open(1);
 	}
 		
@@ -171,9 +173,9 @@ void periph_open(void)
 int main(void)
 {
 	periph_open();
-
     for ( ;; ) 
     {
+		
         WORK_OUT_FSM_TABLE( enum CDCRECV_STATE, get_curst_cdc, get_cursig_cdc, cdc_recv_table )
         WORK_OUT_FSM_TABLE( enum CDCSEND_STATE, get_curst_sendcdc, get_cursig_sendcdc, cdc_send_table )
 
