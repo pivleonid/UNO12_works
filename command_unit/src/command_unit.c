@@ -2,7 +2,7 @@
 #include "cmd_proc.h"
 #include "hrdwr_func.h"
 #include "device/dac.h"
-#include "device/InitializationUNO.h"
+#include "device/InitializationUNO_v1.h"
 #include "device/CPLD.h"
 
 #ifdef __cplusplus

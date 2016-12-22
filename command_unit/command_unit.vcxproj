@@ -138,7 +138,7 @@
     <ClCompile Include="src\device\CPLD.c" />
     <ClCompile Include="src\device\dac.c" />
     <ClCompile Include="src\device\freqcmd_quick.c" />
-    <ClCompile Include="src\device\InitializationUNO.c" />
+    <ClCompile Include="src\device\InitializationUNO_v1.c" />
     <ClCompile Include="src\device\stm32f4xx_gpio_brd.c" />
     <ClCompile Include="src\device\stm32f4xx_pwmdac_brd.c" />
     <ClCompile Include="src\device\stm32f4xx_spidac_brd.c" />
@@ -251,7 +251,7 @@
     <ClInclude Include="src\device\CPLD.h" />
     <ClInclude Include="src\device\dac.h" />
     <ClInclude Include="src\device\freqcmd_quick.h" />
-    <ClInclude Include="src\device\InitializationUNO.h" />
+    <ClInclude Include="src\device\InitializationUNO_v1.h" />
     <ClInclude Include="src\device\stm32f4xx_gpio_brd.h" />
     <ClInclude Include="src\device\stm32f4xx_pwmdac_brd.h" />
     <ClInclude Include="src\device\stm32f4xx_spidac_brd.h" />

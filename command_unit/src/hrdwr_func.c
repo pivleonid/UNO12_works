@@ -8,7 +8,7 @@
 /*includes==========================================================================================================*/
 #include "hrdwr_func.h"
 #include "device/dac.h"
-#include "device/InitializationUNO.h"
+#include "device/InitializationUNO_v1.h"
 #include "device/CPLD.h"
 
 /*defines===========================================================================================================*/
@@ -49,7 +49,7 @@ static struct _PRESELECTOR
 } pres = { 65, { 1, 0, 1, 0 } };
 	
 static uint8_t			yig = 0;
-static cu_type_sts_t	cu_type = CU_TYPE_PRESELECTOR;
+static cu_type_sts_t	cu_type = CU_TYPE_HETERODIN;
 
 /*code==============================================================================================================*/
 
