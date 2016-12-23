@@ -8,7 +8,7 @@
 /*includes==========================================================================================================*/
 #include "hrdwr_func.h"
 #include "device/dac.h"
-#include "device/InitializationUNO_v1.h"
+#include "device/InitializationUNO.h"
 #include "device/CPLD.h"
 
 /*defines===========================================================================================================*/
@@ -49,7 +49,7 @@ static struct _PRESELECTOR
 } pres = { 65, { 1, 0, 1, 0 } };
 	
 static uint8_t			yig = 0;
-static cu_type_sts_t	cu_type = CU_TYPE_PRESELECTOR;
+static cu_type_sts_t	cu_type = CU_TYPE_HETERODIN;
 
 /*code==============================================================================================================*/
 
@@ -214,7 +214,7 @@ uint16_t get_dac_code(uint8_t  id)
      \sa 
 */
 /*=============================================================================================================*/
-void set_dds_code( uint8_t  id, uint32_t freq, uint8_t gain )
+void set_dds_code( uint8_t  id, uint64_t freq, uint8_t gain )
     {
 	    heterodine[id].dds_gain = gain;
 	    heterodine[id].dds_freq = freq;
@@ -283,7 +283,7 @@ uint8_t	get_het_gain_sts(int het_index)
      \sa 
 */
 /*=============================================================================================================*/
-uint32_t get_het_freq_sts(int het_index)  
+uint64_t get_het_freq_sts(int het_index)  
 {
 	return heterodine[het_index].dds_freq;
 }
@@ -328,12 +328,11 @@ void set_het(
 	uint8_t gain, 
 	uint64_t freq		/*!< [in] freq = 0 – 130000000 (0 -13 ֳדצ ס ראדמל 0.1 ֳצ) */
 	)
-{	
-	
+{		
 	if (uno_write(het_index, ((float) freq)/10000000.0, gain) == OK)
 	{
 		heterodine[het_index].dds_gain = gain;	
-		heterodine[het_index].dds_freq = gain;			
+		heterodine[het_index].dds_freq = freq;			
 	}
 }
 

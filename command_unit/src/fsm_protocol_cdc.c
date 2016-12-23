@@ -109,7 +109,7 @@ static uint32_t             parse_index = 0;
 static char*				brk_sym = NULL; 
 
 static uint8_t			    output_cdcbuffer[CDC_OUTPUT_BUFSIZE];
-static uint8_t              echo_need = 0; //1
+static uint8_t              echo_need = 1;
 
 static uint8_t				code_in;
 static uint8_t              *answ_data;
@@ -629,7 +629,7 @@ static void cdc_send_data( int state, int signal )
                 {
                     het_flags_t     het_flags;
                     uint16_t        gain;
-                    uint32_t        freq;
+                    uint64_t        freq;
                 
                     memcpy( &het_flags.byteflags, &answ_data[0], 1 ); 
                     switch ( het_flags.bitflags.mulstate ) {
@@ -642,8 +642,8 @@ static void cdc_send_data( int state, int signal )
                     gain = (uint16_t)answ_data[1] * 5;
                     len += sprintf( &buf[len], " %d", gain );
                     
-                    memcpy( &freq, &answ_data[2], 4 );
-                    len += sprintf( &buf[len], " %d", freq );
+                    memcpy( &freq, &answ_data[2], 8 );
+                    len += sprintf( &buf[len], " %lld", freq );
 
 	                switch (het_flags.bitflags.mulstate) {
 	                case HETMUL_OFF:        len += sprintf(&buf[len], " off");    break;
@@ -652,11 +652,11 @@ static void cdc_send_data( int state, int signal )
 	                case HETMUL_X4HIGH:     len += sprintf(&buf[len], " x4high"); break;
 	                }
 	                
-	                gain = (uint16_t)answ_data[7] * 5;
+	                gain = (uint16_t)answ_data[11] * 5;
 	                len += sprintf(&buf[len], " %d", gain);
 	                
-	                memcpy(&freq, &answ_data[8], 4);
-	                len += sprintf(&buf[len], " %d", freq);
+	                memcpy(&freq, &answ_data[12], 8);
+	                len += sprintf(&buf[len], " %lld", freq);
 	                
                 }
                 break;

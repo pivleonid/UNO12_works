@@ -129,13 +129,13 @@ uint8_t     get_mechatt_flags( void );
 void        set_decoder_code( uint8_t  id, uint8_t code );
 void        set_dac_code( uint8_t  id, uint16_t code );
 uint16_t	get_dac_code(uint8_t  id);
-void        set_dds_code( uint8_t  id, uint32_t freq, uint8_t gain );
+void        set_dds_code( uint8_t  id, uint64_t freq, uint8_t gain );
 void        set_yig_sts( uint8_t on );
 uint8_t     get_yig_sts( void );
     
 uint8_t		get_het_mul_sts(int het_index);
 uint8_t		get_het_gain_sts(int het_index);
-uint32_t	get_het_freq_sts(int het_index);  
+uint64_t	get_het_freq_sts(int het_index);  
 void		set_het_mul(uint8_t code);
 void		set_het(int het_index, uint8_t gain, uint64_t freq);
     

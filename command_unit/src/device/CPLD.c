@@ -113,6 +113,7 @@ static uint8_t func_0x06(uint8_t AT_ID);
 //------------------- Обработка 0x06 --------------------------//
 // D0 1 байт (кроме 0 бита), впринципе перевод работает так, что
 // срать конем на этот бит
+
 static uint8_t func_0x06(uint8_t number)
 {
 	uint16_t code_out = 0;
@@ -140,10 +141,16 @@ static uint8_t func_0x06(uint8_t number)
 /*=============================================================================================================*/
 void cpld_write(uint8_t AT_ID, uint8_t number)
 {
-	if (AT_ID == 0x06) set_3_byte(0, func_0x06(number), 0, 0);
-	if (AT_ID == 0x34) set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0);
+	if (AT_ID == 0x06) { 
+		set_3_byte(0, func_0x06(number), 0, 0);
+		set_3_byte(0, 0, 0, 1);
+	}
+	 else if (AT_ID == 0x34)
+	{
+		set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0);
+	}
 
-	else
+	else 
 	{
 		set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0);
 		set_3_byte(state_preselector[AT_ID][number].data_CPLD_1_0, state_preselector[AT_ID][number].data_CPLD_1_1, state_preselector[AT_ID][number].data_CPLD_1_2, 1);

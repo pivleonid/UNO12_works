@@ -340,10 +340,10 @@ static err_code_t  set_dac( void* in_data, void* answ_data )
 /*=============================================================================================================*/
 static err_code_t  set_dds( void* in_data, void* answ_data )
     {
-        uint32_t    freq;
+        uint64_t    freq;
     
-        memcpy( &freq, &((uint8_t*)in_data)[1], 4 );
-        set_dds_code(((uint8_t*)in_data)[0], freq, ((uint8_t*)in_data)[5]);
+        memcpy( &freq, &((uint8_t*)in_data)[1], 8 );
+        set_dds_code(((uint8_t*)in_data)[0], freq, ((uint8_t*)in_data)[9]);
         
         return _RESULT_OK;        
     }
@@ -520,17 +520,17 @@ static err_code_t  get_uno( void* in_data, void* answ_data )
       [7]  - gain 2
       [8-11] - freq 2
       */
-	uint32_t	temp_freq;   
+	uint64_t	temp_freq;   
 	    
     ((uint8_t*)answ_data)[0] = get_het_mul_sts(0);    
     ((uint8_t*)answ_data)[1] = get_het_gain_sts(0);
 	temp_freq = get_het_freq_sts(0);
-    memcpy(&((uint8_t*)answ_data)[2], &temp_freq, 4);    
+    memcpy(&((uint8_t*)answ_data)[2], &temp_freq, 8);    
 	    
-	((uint8_t*)answ_data)[6] = get_het_mul_sts(1);    
-    ((uint8_t*)answ_data)[7] = get_het_gain_sts(1);
+	((uint8_t*)answ_data)[10] = get_het_mul_sts(1);    
+    ((uint8_t*)answ_data)[11] = get_het_gain_sts(1);
     temp_freq = get_het_freq_sts(1);
-    memcpy(&((uint8_t*)answ_data)[8], &temp_freq, 4);    
+    memcpy(&((uint8_t*)answ_data)[12], &temp_freq, 8);    
 	        
     return _RESULT_OK;        
     }
@@ -712,7 +712,7 @@ uint8_t	trans_data_from_string
             case CMDCODE_DDS: 
                 {
                     uint8_t     id;
-                    uint32_t    freq;
+                    uint64_t    freq;
                     uint16_t    gain;
                 
                     sym = string;
@@ -721,7 +721,8 @@ uint8_t	trans_data_from_string
                         return ERROR;                    
                     }
                     
-                    freq = strtol( *end, end, 10 );
+                    //freq = strtol( *end, end, 10 );
+                    freq = strtoll( *end, end, 10 );	                
                     if ( *end == NULL ) {
                         return ERROR;                    
                     }
@@ -732,11 +733,11 @@ uint8_t	trans_data_from_string
                     }
                 
                     ((uint8_t*)output_buf)[0] = id;
-                    memcpy(&((uint8_t*)output_buf)[1], &freq, 4);
-                    ((uint8_t*)output_buf)[5] = (uint8_t)(gain / 5);
+                    memcpy(&((uint8_t*)output_buf)[1], &freq, 8);
+                    ((uint8_t*)output_buf)[9] = (uint8_t)(gain / 5);
                 
                     if ( outlen != NULL ) {
-                        *outlen = 6;
+                        *outlen = 10;
                     }                                               
                 }
             break;
@@ -892,9 +893,9 @@ uint8_t	trans_data_from_string
 	            }	            
                 
 	            /* частота */
-	            //freq = strtol(*end, end, 10);
-				freq = atoll(*end);
-				no_parse++;
+//	            freq = strtol(*end, end, 10);
+	            freq = strtoll(*end, end, 10);
+	            no_parse++;
 	            if (*end == NULL) {
 		            return ERROR;                    
 	            }
