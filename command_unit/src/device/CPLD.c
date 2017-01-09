@@ -95,6 +95,19 @@ const  CPLD_out_t   state_preselector[53][14] = {
 	[Ymnog_UNO1][3] = { 0b10111011, 1, 0, 0, 0, 0 },
 
 };
+/*---------------------маска состояний---------------------*/
+const CPLD_out_t state_mask[9] = {
+	[LNA]					 = { 0xFF, 0xFF, 0xFF, 0xFF, 0b11100111, 0xFF },
+	[LNA_1_GHz_preselector]	 = { 0xFF, 0xFF, 0xFF, 0xFF, 0b11011111, 0xFF },
+	[Attenuator_0_65_dB]	 = { 0xFF, 0xFF, 0xFF ,0xFF, 0xFF, 0b11110000 },
+	[RF_TEST]				 = { 0xFF, 0xFF, 0xFF, 0xFF, 0b11111101, 0xFF },
+	[state_preselector_0x05] = { 0, 0b11111110, 0b11110000, 0b11111000, 0xFF, 0xFF },
+	[6]						 = { 0xFF,  0b00000001 , 0xFF, 0xFF, 0xFF, 0xFF },
+	[Preseloctor_ON_OFF]	 = { 0xFF, 0xFF, 0xFF, 0xFF, 0b10111111, 0xFF },
+	[HighBand_LowBand]		 = { 0xFF, 0xFF, 0xFF, 0xFF, 0b01111111, 0xFF }
+};
+/*Сохраняемое состояние*/
+CPLD_out_t save_state;
 /*prototypes========================================================================================================*/
 static void set_3_byte(uint8_t data_byte1, uint8_t data_byte2, uint8_t data_byte3, uint8_t CPLD);
 static void set_byte(uint8_t data_byte, uint8_t addr_CPLD);
@@ -141,19 +154,32 @@ static uint8_t func_0x06(uint8_t number)
 /*=============================================================================================================*/
 void cpld_write(uint8_t AT_ID, uint8_t number)
 {
-	if (AT_ID == 0x06) { 
-		set_3_byte(0, func_0x06(number), 0, 0);
-		set_3_byte(0, 0, 0, 1);
-	}
-	 else if (AT_ID == 0x34)
+	switch (AT_ID)
 	{
-		set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0);
-	}
-
-	else 
-	{
-		set_3_byte(state_preselector[AT_ID][number].data_CPLD_0_0, state_preselector[AT_ID][number].data_CPLD_0_1, state_preselector[AT_ID][number].data_CPLD_0_2, 0);
-		set_3_byte(state_preselector[AT_ID][number].data_CPLD_1_0, state_preselector[AT_ID][number].data_CPLD_1_1, state_preselector[AT_ID][number].data_CPLD_1_2, 1);
+		/*---------------------------Обработка значений модуля гетеродина----------------------*/
+	case 0x34:
+		save_state.data_CPLD_0_0 = state_preselector[AT_ID][number].data_CPLD_0_0;
+		save_state.data_CPLD_0_1 = state_preselector[AT_ID][number].data_CPLD_0_1;
+		save_state.data_CPLD_0_2 = state_preselector[AT_ID][number].data_CPLD_0_2;
+		set_3_byte(save_state.data_CPLD_0_0, save_state.data_CPLD_0_1, save_state.data_CPLD_0_2, 0);
+		break;
+		/*--------------------------Обработка значений модуля преселектора----------------------*/
+	case 0x06:
+		save_state.data_CPLD_0_0 = (save_state.data_CPLD_0_0 & state_mask[AT_ID].data_CPLD_0_0);
+		save_state.data_CPLD_0_1 = (func_0x06(number)		  & state_mask[AT_ID].data_CPLD_0_1);
+		save_state.data_CPLD_0_2 = (save_state.data_CPLD_0_2 & state_mask[AT_ID].data_CPLD_0_2);
+		set_3_byte(save_state.data_CPLD_0_0, save_state.data_CPLD_0_1, save_state.data_CPLD_0_2, 0);
+		break;
+	default:
+		save_state.data_CPLD_0_0 = state_preselector[AT_ID][number].data_CPLD_0_0 | (save_state.data_CPLD_0_0 & state_mask[AT_ID].data_CPLD_0_0);
+		save_state.data_CPLD_0_1 = state_preselector[AT_ID][number].data_CPLD_0_1 | (save_state.data_CPLD_0_1 & state_mask[AT_ID].data_CPLD_0_1);
+		save_state.data_CPLD_0_2 = state_preselector[AT_ID][number].data_CPLD_0_2 | (save_state.data_CPLD_0_2 & state_mask[AT_ID].data_CPLD_0_2);
+		save_state.data_CPLD_1_0 = state_preselector[AT_ID][number].data_CPLD_1_0 | (save_state.data_CPLD_1_0 & state_mask[AT_ID].data_CPLD_1_0);
+		save_state.data_CPLD_1_1 = state_preselector[AT_ID][number].data_CPLD_1_1 | (save_state.data_CPLD_1_1 & state_mask[AT_ID].data_CPLD_1_1);
+		save_state.data_CPLD_1_2 = state_preselector[AT_ID][number].data_CPLD_1_2 | (save_state.data_CPLD_1_2 & state_mask[AT_ID].data_CPLD_1_2);
+		set_3_byte(save_state.data_CPLD_0_0, save_state.data_CPLD_0_1, save_state.data_CPLD_0_2, 0);
+		set_3_byte(save_state.data_CPLD_1_0, save_state.data_CPLD_1_1, save_state.data_CPLD_1_2, 1);
+		break;
 	}
 
 }
